@@ -1,8 +1,11 @@
-import flask
-from api import get_asset_info
-app = flask.Flask(__name__)
+from  flask import Flask 
+from api.services import *
+app = Flask(__name__)
 
-app.add_url_rule("/getStock/<asset_name>", "/getStock/<asset_name>",get_asset_info)
+api_prefix = "/assetscraper/api/"
+app.register_blueprint(asset_req_api, url_prefix = api_prefix)
 
+# app.add_url_rule("/assetScraper/api/getAssetInfo&name=<asset_name>", "/getStockAPI/<asset_name>",get_asset_info)
+# app.add_url_rule()
 if __name__ == "__main__":
     app.run(debug=True)
