@@ -1,4 +1,4 @@
-from  flask import Flask 
+from  flask import Flask, redirect 
 from api.services import *
 app = Flask(__name__)
 
@@ -6,6 +6,14 @@ api_prefix = "/assetscraper/api/"
 
 def unknown_page(e):
     return "this route doesn't eixst", 404
+
+@app.route("/")
+def index():
+    return redirect("/assetscraper/api/")
+
+@app.route("/assetscraper/api/")
+def home():
+    return "Welcome to StockTrack! Please look into the documentation for available routes. Thank you!"
 
 app.register_error_handler(404,unknown_page)
 
