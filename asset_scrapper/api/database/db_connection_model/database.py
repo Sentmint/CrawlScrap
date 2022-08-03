@@ -1,6 +1,9 @@
-
 class Database():
 
     def __init__():
-        return
-        
+        pass
+    
+    def push(path: str, ) -> bool:
+        pass
+
+    def 

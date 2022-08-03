@@ -1,2 +1,2 @@
-from .asset_request import *
+from .asset_request_routes import *
 # __all__ = ['asset_request']
