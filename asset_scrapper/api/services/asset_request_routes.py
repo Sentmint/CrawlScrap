@@ -1,3 +1,4 @@
+from api.database import Mongo
 import yfinance as yf
 import pandas as pd
 from flask import Blueprint, abort, g, jsonify, request, current_app
@@ -19,14 +20,16 @@ def check_request():
         # return "Not valid value", 400
     if(not ticker):
         abort(status=400)
-    g.ticker = ticker
+    g.ticker:yf.Ticker = ticker
 
+    
 
 
 
 @asset_req_route.route("/assetinfo")
 def get_asset_info():
-    return jsonify(g.get("ticker").info), 200
+    result = current_app.db.push_data("general_info", g.ticker.info)
+    return jsonify(data=g.get("ticker").info), 200
         
 
 #This route DOESN'T WORK
@@ -43,7 +46,7 @@ def get_asset_history():
     :query_arg: interval   This is the interval between data points, such as 1m, 1h, 1wk, etc
     """
     args = request.args
-    if(args.get("period") not in accepted_periods and args.get("interval") not in accepted_intervals):
+    if args.get("period") not in accepted_periods and args.get("interval") not in accepted_intervals:
         return "Invalid period or interval", 400
     return jsonify((g.get("ticker").history(period=args.get("period"), interval=args.get("interval"))).to_json()), 200
 
@@ -96,11 +99,12 @@ def get_asset_recommendation():
 #Handle bad request errors, usually incorrect query parameters or values
 @asset_req_route.errorhandler(400)
 def handle_bad_request(e):
+    # g.db.close() Should routes close it's own db connections?
     return "Bad request!", 400
 
-def create_ticker(args, ticker_name):
+def create_ticker(args, ticker_name) -> yf.Ticker:
     tick_obj = yf.Ticker(args.get(ticker_name))
-    if(ticker_name == None or len(tick_obj.history()) == 0):
+    if ticker_name == None or len(tick_obj.history()) == 0:
         return None
     return tick_obj
 
