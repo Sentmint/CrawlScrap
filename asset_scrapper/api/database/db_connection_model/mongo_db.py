@@ -74,8 +74,3 @@ class Mongo(Database):
 
 
    
-# a = Mongo( )
-# a.connect("Mike", "Summer2022.","stocktrack.7e2q0by", "firstDB3")
-# a.push_data("collect",{'test': {"hey":1}})
-
-
