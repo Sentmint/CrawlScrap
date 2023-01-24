@@ -39,7 +39,7 @@ def get_asset_dividends():
 @asset_req_api.route("/assethistory")
 def get_asset_history():
     """
-    :query_arg: period     This is the period of the history looking for, such as 1d, 1mo, etc
+    :query_arg: period     This is the period of the history looking for, such as 1d, 1mo, etc\n
     :query_arg: interval   This is the interval between data points, such as 1m, 1h, 1wk, etc
     """
     args = request.args
@@ -91,6 +91,12 @@ def get_asset_recommendation():
 
     """
     return jsonify(g.get("ticker").recommendations.to_json()), 200
+
+@asset_req_api.route("/download")
+def download_mass_stock_data():
+    period = request.args.get("period", default="5d")
+    data: pd.DataFrame = yf.download(tickers=g.get("ticker").ticker, period=period)
+    return data.to_json()
 
 
 #Handle bad request errors, usually incorrect query parameters or values
