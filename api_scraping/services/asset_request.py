@@ -4,7 +4,7 @@ from flask import Blueprint, abort, g, jsonify, make_response, request
 
 """
 GLOBAL 
-Need to have asset_ticker query argument
+Need to have ticker query argument
 """
 
 asset_req_api = Blueprint("asset_req_api", __name__)
@@ -14,38 +14,33 @@ accepted_intervals = ['1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', 
 
 @asset_req_api.before_request
 def check_request():
-    ticker = create_ticker(request.args, "asset_ticker")
-    # if(not request.args.get("asset_ticker")):
-        # return "Not valid value", 400
+    # if(request.endpoint != "download"):
+    ticker = create_ticker(request.args, "ticker")
     if(not ticker):
         abort(status=400)
-    g.ticker = ticker
-
-
+    g.ticker: yf.Ticker = ticker
 
 
 @asset_req_api.route("/assetinfo")
 def get_asset_info():
-    return jsonify(g.get("ticker").info), 200
+    return jsonify(g.get("ticker").fast_info.toJSON()), 200
         
-
 #This route DOESN'T WORK
 @asset_req_api.route("/assetdividends")
 def get_asset_dividends():
-    return jsonify(g.get("ticker").get_dividends().to_json()), 200
-
-
+    print(g.get("ticker").dividends)
+    return jsonify(g.get("ticker").get_dividends().to_json(date_format="iso")), 200
 
 @asset_req_api.route("/assethistory")
 def get_asset_history():
     """
-    :query_arg: period     This is the period of the history looking for, such as 1d, 1mo, etc\n
-    :query_arg: interval   This is the interval between data points, such as 1m, 1h, 1wk, etc
+    :query_arg period:     This is the period of the history looking for, such as 1d, 1mo, etc\n
+    :query_arg interval:   This is the interval between data points, which are '1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', '5d', '1wk', '1mo', '3mo'
     """
     args = request.args
     if(args.get("period") not in accepted_periods and args.get("interval") not in accepted_intervals):
         return "Invalid period or interval", 400
-    return jsonify((g.get("ticker").history(period=args.get("period"), interval=args.get("interval"))).to_json()), 200
+    return jsonify((g.get("ticker").history(period=args.get("period","1mo"), interval=args.get("interval","1h"))).to_json()), 200
 
 #This route DOESN'T WORK
 @asset_req_api.route("/assetsplits")
@@ -86,7 +81,7 @@ def get_asset_sustainability():
 @asset_req_api.route("/assetrecommendation")
 def get_asset_recommendation():
     """
-    Summary:
+    Summary:\n
     Shows analysts reccomendations
 
     """
@@ -94,9 +89,19 @@ def get_asset_recommendation():
 
 @asset_req_api.route("/download")
 def download_mass_stock_data():
+    """
+    Returns a collection of data points about a stock or multiple stocks (CURRENTLY only supports one asset per request)
+
+    :query_arg period:     This is the period of the history looking for, such as 1d, 1mo, etc\n
+    :query_arg interval:   This is the interval between data points, which are '1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', '5d', '1wk', '1mo', '3mo'
+
+    Returns:
+        JSON of an asset's financial details
+    """
     period = request.args.get("period", default="5d")
-    data: pd.DataFrame = yf.download(tickers=g.get("ticker").ticker, period=period)
-    return data.to_json()
+    interval = request.args.get("interval", "1h")
+    data: pd.DataFrame = yf.download(tickers=g.get("ticker").ticker, period=period, interval=interval)
+    return jsonify(data.to_json()), 200
 
 
 #Handle bad request errors, usually incorrect query parameters or values
@@ -104,7 +109,7 @@ def download_mass_stock_data():
 def handle_bad_request(e):
     return "Bad request!", 400
 
-def create_ticker(args, ticker_name):
+def create_ticker(args, ticker_name) -> yf.Ticker:
     tick_obj = yf.Ticker(args.get(ticker_name))
     if(ticker_name == None or len(tick_obj.history()) == 0):
         return None
