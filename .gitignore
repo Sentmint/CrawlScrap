@@ -1,0 +1,7 @@
+﻿# sensitive
+secrets.py
+
+# cache
+.idea
+__pycache__
+
