@@ -1,5 +1,6 @@
 from  flask import Flask, redirect 
-from api.services import *
+from api_scraping.services import *
+# from ..database import test
 app = Flask(__name__)
 
 api_prefix = "/assetscraper/api/"
@@ -9,7 +10,7 @@ def unknown_page(e):
 
 @app.route("/")
 def index():
-    return redirect("/assetscraper/api/")
+    return redirect(api_prefix)
 
 @app.route("/assetscraper/api/")
 def home():
