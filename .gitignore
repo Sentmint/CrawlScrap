@@ -1,5 +1,5 @@
 ﻿# sensitive
-secrets.py
+**/secrets.py
 
 # cache
 .idea
