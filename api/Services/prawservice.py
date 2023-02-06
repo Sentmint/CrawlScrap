@@ -1,5 +1,5 @@
 import praw
-from api.Services import secrets
+from api.services import secrets
 
 
 def prawConnection():
