@@ -1,15 +1,9 @@
 from api.services import prawservice as praw
 from api.resources import subreddits as subs
-from api.dtos import redditdto as dto
-from pathlib import Path
-import datetime
 import json
 import time
 import os
-
-reddit = praw.prawConnection()
-started = str(time.time())
-Path("/Reddit-Scraper/api/output/" + started).mkdir(parents=True, exist_ok=True)
+from pathlib import Path
 
 
 # TODO: find a way to get to the bottom of every comment, or find a function that does it for us.
@@ -26,111 +20,84 @@ Path("/Reddit-Scraper/api/output/" + started).mkdir(parents=True, exist_ok=True)
 # Potential Answer: First scan will be done on BEST. Second scan will be done on NEW. (not correct, may end up losing new comments due to janky logic)
 
 
-# def threadScrape(thread):
-
-# Each page is 25 entries on reddit. Only checking the front page of the subreddit.
-
-def build_submission_json(submission: dto.SubmissionDto, comments: list):
-    commentsCollection = []
-    for comment in comments:
-        if comment.body == "[deleted]":
-            continue
-        curr = {
-            "commentAuthor": [{
-                "id": comment.author.id,
-                "name": comment.author.name,
-                "commentKarma": comment.author.comment_karma,
-                "submissionKarma": comment.author.link_karma,
-                "accountCreated": comment.author.created_utc
-            }],
-            "body": comment.body,
-            "created_utc": comment.created_utc,
-            "edited": comment.edited,
-            "id": comment.id,
-            "is_root": comment.is_root,
-            "is_submitter": comment.is_submitter,
-            "permalink": comment.permalink,
-            "score": comment.score,
-            "ups": comment.ups
-        }
-        commentsCollection.append(curr)
-    return {
-        "id": submission.id,
-        "title": submission.title,
-        "subreddit": submission.subreddit_name_prefixed,
-        "created_utc": submission.created_utc,
-        "upvote": submission.ups,
-        "upvote_ratio": submission.upvote_ratio,
-        "score": submission.score,
-        "selfText": submission.selftext,
-        "selfUrl": submission.url,
-
-        "permalink": submission.permalink,
-        "shortlink": submission.shortlink,
-        "author": [
-            {"id": submission.author.id,
-             "name": submission.author.name,
-             "commentKarma": submission.author.comment_karma,
-             "submissionKarma": submission.author.link_karma,
-             "accountCreated": submission.author.created_utc,
-             }],
-        "commentCount": submission.num_comments,
-        "comments": commentsCollection
-    }
-
-
-def create_submission_json(thread: dict):
-    path = '/Reddit-Scraper/api/output/' + started + '.JSON'
-    file = str(time.time())
-    with open(os.path.join(path, file), 'w') as file:
-        json.dump(thread, file)
-
-
 def top25scanner():
+    reddit = praw.prawConnection()
     for subreddit in subs.subredditList():
         top25 = reddit.subreddit(subreddit).hot(limit=25)
-        for thread in top25:
-            if thread.stickied:
+        top25Submissions = []
+        for submission in top25:
+            if submission.stickied:
                 continue
-            submission = dto.SubmissionDto(
-                thread.author,
-                thread.created_utc,
-                thread.id,
-                thread.num_comments,
-                thread.permalink,
-                thread.score,
-                thread.selftext,
-                thread.shortlink,
-                thread.subreddit_name_prefixed,
-                thread.title,
-                thread.ups,
-                thread.upvote_ratio,
-                thread.url
-            )
             comments = []
-            curr = reddit.submission(thread.id)  # Grabs the front page ids to be scanned for comments
-            curr.comment_sort = "new"  # Sort comments by new to fetch only new comments
+            curr = reddit.submission(submission.id)  # Grabs the front page ids to be scanned for comments
+
+            # TODO: Move this to ETL if quick way to filter out old comments is needed
+            # curr.comment_sort = "new"  # Sort comments by new to fetch only new comments
+            # if comment.created_utc < valueToScan:
+            #     continue
+
             curr.comments.replace_more(limit=None, threshold=0)  # Fetch all comments and their children
             for comment in curr.comments.list():  # Create a list of all comments to eliminate hierarchy
-                # if comment.created_utc < valueToScan:
-                #     continue
-                comments.append(dto.CommentDto(
-                    comment.author,
-                    comment.body,
-                    comment.created_utc,
-                    comment.edited,
-                    comment.id,
-                    comment.is_root,
-                    comment.is_submitter,
-                    comment.permalink,
-                    comment.score,
-                    comment.ups
-                ))
-            create_submission_json(build_submission_json(submission, comments))
+                if comment.author is None:  # Handles cases of comment being deleted by user or removed by Reddit
+                    continue
+                comments.append({
+                    "commentAuthor": [{
+                        "id": comment.author.id,
+                        "name": comment.author.name,
+                        "commentKarma": comment.author.comment_karma,
+                        "submissionKarma": comment.author.link_karma,
+                        "accountCreated": comment.author.created_utc
+                    }],
+                    "body": comment.body,
+                    "created_utc": comment.created_utc,
+                    "edited": comment.edited,
+                    "id": comment.id,
+                    "is_root": comment.is_root,
+                    "is_submitter": comment.is_submitter,
+                    "permalink": comment.permalink,
+                    "score": comment.score,
+                    "ups": comment.ups
+                })
+            top25Submissions.append({
+                "id": submission.id,
+                "title": submission.title,
+                "flair": submission.link_flair_text,
+                "subreddit": submission.subreddit_name_prefixed,
+                "created_utc": submission.created_utc,
+                "upvote": submission.ups,
+                "score": submission.score,
+                "upvote_ratio": submission.upvote_ratio,
+                "selfText": submission.selftext,
+                "selfUrl": submission.url,
+                "permalink": submission.permalink,
+                "shortlink": submission.shortlink,
+                "author": [
+                    {"id": submission.author.id,
+                     "name": submission.author.name,
+                     "commentKarma": submission.author.comment_karma,
+                     "submissionKarma": submission.author.link_karma,
+                     "accountCreated": submission.author.created_utc,
+                     }],
+                "commentCount": submission.num_comments,
+                "comments": comments
+            })
+        create_submission_json(top25Submissions, subreddit)
 
 
-start = datetime.datetime.now()
+def create_submission_json(submissions: list, subreddit):
+    testing = json.dumps(submissions)
+    print(testing)
+    path = "Reddit-Scraper/api/output/" + subreddit
+    Path(path).mkdir(parents=True, exist_ok=True)
+
+    with open("PersonalFinanceCanada.json", "w") as f:
+        json.dump(submissions, f)
+
+    # path = 'Reddit-Scraper/api/output/' + subreddit
+    # file = 'subreddit.json'
+    # test = os.path.join(path, file)
+    # with open(test, 'w') as file:
+    #     json.dump(submissions, file)
+
+
 top25scanner()
-end = datetime.datetime.now()
-totalRun = end - start
-print(totalRun)

@@ -1,4 +1,4 @@
 def subredditList():
     return [
-        "GuildWars2",
+        "PersonalFinanceCanada",
     ]

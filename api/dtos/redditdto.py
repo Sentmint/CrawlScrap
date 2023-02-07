@@ -2,12 +2,13 @@ from praw.models import Redditor
 
 
 class SubmissionDto:
-    def __init__(self, author: Redditor, created_utc: float, id: str, num_comments: str, permalink: str,
-                 score: int, selftext: str, shortlink: str, subreddit_name_prefixed: str, title: str, ups: int,
-                 upvote_ratio: float, url: str) -> None:
+    def __init__(self, author: Redditor, created_utc: float, id: str, link_flair_text: str, num_comments: str,
+                 permalink: str, score: int, selftext: str, shortlink: str, subreddit_name_prefixed: str, title: str,
+                 ups: int, upvote_ratio: float, url: str) -> None:
         self.author = author
         self.created_utc = created_utc
         self.id = id
+        self.link_flair_text = link_flair_text
         self.num_comments = num_comments
         self.permalink = permalink
         self.score = score
