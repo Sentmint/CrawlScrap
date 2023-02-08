@@ -1,10 +1,9 @@
-Built using the Python Reddit API Wrapper [PRAW](https://praw.readthedocs.io/en/latest/index.html)
+## Built using the Python Reddit API Wrapper [PRAW](https://praw.readthedocs.io/en/latest/index.html)
 
 When this application is run, it will scan and fetch comments from the front page of the given subreddits <br>
 Folders corresponding to the scanned subreddit will be created [here](api/output) (if needed) and populated with a JSON; the JSON's filename will be when the JSON was produced. 
 
-When this application is run, it will scan and fetch comments from the front page of the given subreddits <br>
-Folders corresponding to the scanned subreddit will be created here (if needed) and populated with a JSON; the JSON's filename will be when the JSON was produced. 
+## Connecting
 
 Requires a Reddit account with a script application defined. Quick guide available [here](https://towardsdatascience.com/scraping-reddit-data-1c0af3040768)
 
@@ -12,6 +11,7 @@ The credentials are currently stored within the services folder [here](api/servi
 
 `Note: This should probably be changed to use ENV later`
 
+<br>
 
 ## API Limitations & API Definitions
 
