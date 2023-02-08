@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Definitions
 
 ## Prefix
@@ -15,11 +16,15 @@
 =======
 # Definitions of available information (of interest) from objects
 >>>>>>> 0668ebe (Final README update)
+=======
+# Definitions of available information (of interest) from objects
+>>>>>>> 34b4bf8 (Added API return object attribute names, values, and descriptions for potentially increased granularity of return JSON)
 
 ## Submission Object (thread/post)
 
 | Field | Data Type | Description | 
 | - | - | - |
+<<<<<<< HEAD
 | author | Redditor Object | See 'Author Object' table | 
 | author_fullname | string | t2_ prefix + author unique id <br> ex: 't2_137iwh'
 | comments | CommentForest Object | See 'Comments Object' table | 
@@ -42,10 +47,33 @@
 | upvote_ratio | float | Upvote to downvote ratio of thread | 
 | url | string | URL provided by thread. Generally populated when a thread is an image/link post | 
 | user_reports | list | List of reports that the thread has received |
+=======
+| author | Redditor Object | See 'Author Object' table. | 
+| author_fullname | string | t2_ prefix + author unique id <br> ex: 't2_137iwh'
+| comments | CommentForest Object | See 'Comments Object' table | 
+| created_utc | float | Epoch timestamp of when the thread was created. | 
+| fullname | string | t3_ prefix + link to unique reddit thread in a given subreddit <br> ex: 't3_10rs0tf' fetched from subreddit xyz can be linked to as such: <br> reddit.com/r/xyz/comments/10rs0tf/ |
+| id | string | t3 id; link to thread without the 't3_' prefix. <br> ex: '10r0tf' |
+| num_comments | string | Number of comments within the given thread. | 
+| permalink | string | Suffix of a given thread. <br> ex: /r/Catmemes/comments/uwo6hm/ThreadTitle |
+| score | int | Score of thread (Upvotes - Downvotes ?). |
+| selftext | string | Text posted by thread author. |
+| selftext_html | string | Text posted by thread author in HTML format. |
+| shortlink | string | Direct link to specific thread. <br> ex: 'https://redd.it/v4ds3y'
+| subreddit | Subreddit object | Several fields pertaining to the subreddit which the thread belongs to. |
+| subreddit_id | string | t5_ prefix + subreddit unique id. <br> ex: 't5_2r9po' | 
+| subreddit_name_prefixed | string | Name of subreddit with 'r/' prefix. <br> ex: 'r/WallstreetBets' |
+| subreddit_subscribers | int | Number of users subscribed to the specific subreddit. | 
+| ups | int | Number of upvotes that the thread has. | 
+| upvote_ratio | float | Upvote to downvote ratio of thread. | 
+| url | string | URL provided by thread. Generally populated when a thread is an image/link post. | 
+| user_reports | list | List of reports that the thread has received. |
+>>>>>>> 34b4bf8 (Added API return object attribute names, values, and descriptions for potentially increased granularity of return JSON)
 | | |
 
 <br><br>
 
+<<<<<<< HEAD
 ## CommentForest Object (comments)
 
 | Field | Data Type | Description | 
@@ -72,11 +100,43 @@
 | subreddit_name_prefixed | string | Name of subreddit with 'r/' prefix <br> ex: 't5_2r9po' |
 | ups | int | Number of upvotes that the comment has | 
 | user_reports | list | List of reports that the comment has received |
+=======
+## Comments Object
+
+| Field | Data Type | Description | 
+| - | - | - |
+| author | Redditor Object | See 'Author Object' table. | 
+| author_fullname | string | t2_ prefix + author unique id <br> ex: 't2_137iwh' | 
+| body | string | Comment content | 
+| body_html | string | Comment content in HTML format. |
+| controversiality | int | How controversial a comment is. |
+| created_utc | float | Epoch timestamp of when the comment was created. | 
+| depth | int | Depth of the comment within a CommentForest starting from 0 index. <br> If 'is_root' = True, then the depth is 0.  |
+| edited | bool | True if the comment was ever edited. | 
+| fullname | string | t1_ prefix + link to unique reddit comment in a given thread. <br> ex: 't1_j6vrh6g' |
+| id | string | t1 id; link to comment without the 't1_' prefix. <br> ex: 'j6vrh6g' |
+| is_root | boolean | True if this is a top-level comment; not the child of another comment. |
+| is_submitter | boolean | True if the author of thread is also the author of the comment. |
+| link_id | string | t3_ prefix + link to unique reddit thread where the comment was posted. |
+| locked | boolean | True if the thread is locked; no comments may be posted to it. | 
+| permalink | string | Suffix of a given comment within a thread. <br> ex: /r/GuildWars2/comments/10rf5xx/angry_avian/j6vrh6g |
+| score | int | Score of specific comment. | 
+| submission | Submission Object | See 'Submission Object' table |
+| subreddit | Subreddit Object | Several fields pertaining to the subreddit which the comment belongs to. |
+| subreddit_id | string | t5_ prefix + subreddit unique id. <br> ex: 't5_10rf5xx' | 
+| subreddit_name_prefixed | string | Name of subreddit with 'r/' prefix. <br> ex: 't5_2r9po' |
+| ups | int | Number of upvotes that the comment has. | 
+| user_reports | list | List of reports that the comment has received. |
+>>>>>>> 34b4bf8 (Added API return object attribute names, values, and descriptions for potentially increased granularity of return JSON)
 | | |
 
 <br><br>
 
+<<<<<<< HEAD
 ## Redditor Object (author)
+=======
+## Author Object
+>>>>>>> 34b4bf8 (Added API return object attribute names, values, and descriptions for potentially increased granularity of return JSON)
 
 | Field | Data Type | Description | 
 | - | - | - |
