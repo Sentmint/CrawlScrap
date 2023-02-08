@@ -1,5 +1,5 @@
 import praw
-from api.services import secrets
+from redditscraper.api.services import secrets
 
 
 def prawConnection():
