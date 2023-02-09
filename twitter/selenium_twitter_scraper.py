@@ -25,7 +25,6 @@ TODO:
 - Talk it out and Discuss options:
     - Still store what was collected up until failed connection? [Maybe give user option to store and overwrite data or not?]
     - Setup other web browsers other than Chrome if one fails? [Maybe give user option to choose?]
-- Setup ENV variables in file for login credentials + other miscellaneous items? (Good code practice and security)
 (Navigation)
  - With user input, dynamically setup custom navigation on Twitter?: 
     - Enter keyword for search query box (ie: '#TSLA')
@@ -41,6 +40,7 @@ TODO:
 """
 
 import time, requests, logging, getpass, csv, os
+from dotenv import load_dotenv #For envrionment variables
 
 from selenium.webdriver import Chrome #Firefox Browser: "Firefox" | Edge Browser: "from msedge.selenium_tools import Edge, EdgeOptions"
 from selenium.webdriver import ChromeOptions 
@@ -219,6 +219,7 @@ def store_tweet_data_payload(dataPayload):
 ####################### LOGIC ##########################
 startTime = time.time() # Time Keeper
 logger = setup_logger() # Logging Messages
+load_dotenv() # Load environment variables from .env file
 
 #-- Create Instance of Webdriver 
 options = ChromeOptions()
@@ -235,13 +236,13 @@ driver.get("https://www.twitter.com/login")
 
 #-- Login to Twitter --
 username = driver.find_element("xpath", '//input[@class="r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu"]') #@type="text"
-username.send_keys('marco_cen2001@hotmail.com')
+username.send_keys(os.environ.get("TWITTER_USERNAME"))
 username.send_keys(Keys.RETURN) #-- Same as user clicking "NEXT" Button
 
 #-- If unusal activity confirmation page appears
 try:
     userConfirmation = driver.find_element("xpath", '//input[@data-testid="ocfEnterTextTextInput"]') # User Confirmation screen
-    userConfirmation.send_keys('ProudMC2')
+    userConfirmation.send_keys(os.environ.get("TWITTER_USER_CONFIRMATION"))
     userConfirmation.send_keys(Keys.RETURN)
 except NoSuchElementException:
     logger.info("No Extra User Confirmation Needed")
@@ -250,8 +251,7 @@ driver.implicitly_wait(10) # To allow enough load time for webpage
 
 #-- Enter PSWD Page
 pswd = driver.find_element("xpath", '//input[@type="password"]')
-userInputPswd = getpass.getpass()
-pswd.send_keys(userInputPswd) # (SETUP to manually type into console each time due to security) TODO: Set as ENV variable in separate hidden from version control file (Better practice and security)
+pswd.send_keys(os.environ.get("TWITTER_PSWD")) # (SETUP to manually type into console each time due to security)
 pswd.send_keys(Keys.RETURN)
 driver.implicitly_wait(10) # To allow enough load time for webpage
 
@@ -261,7 +261,7 @@ searchInput.send_keys('#TSLA')  ## SEARCH TERM TODO: Dynamically based on user i
 searchInput.send_keys(Keys.RETURN) 
 
 #-- Pull historical data (Ex: "LATEST" tab) TODO: Dynamically based on user input?
-driver.find_element("xpath", '//div[@class="css-901oao r-1awozwy r-14j79pv r-6koalj r-18u37iz r-37j5jr r-a023e6 r-majxgm r-1pi2tsx r-1777fci r-rjixqe r-bcqeeo r-1l7z4oj r-95jzfe r-bnwqim r-qvutc0"]').click() #Just above span tag bc cant interact with span tag
+driver.find_element("xpath", "//span[text()='Latest']").click() #Just above span tag bc CANT interact with span tag directly!!
 
 try:
     payloadCollected = [] # Finalized extracted & collected tweet cards to be stored used in COLLECTION process (Initalized here to still be able to store data if failure occurs)

@@ -1,5 +1,5 @@
-from reddit.services import prawservice as praw
-from reddit.resources import subreddits as subs
+from services import prawservice as praw
+from resources import subreddits as subs
 from pathlib import Path
 import logging
 import json
