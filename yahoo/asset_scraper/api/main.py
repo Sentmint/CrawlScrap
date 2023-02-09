@@ -1,5 +1,5 @@
 from  flask import Flask, redirect 
-from api_scraping.services import *
+from yahoo.asset_scraper.api.services import *
 # from ..database import test
 app = Flask(__name__)
 
