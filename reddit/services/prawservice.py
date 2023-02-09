@@ -1,6 +1,5 @@
 import praw
-from redditscraper.api.services import secrets
-
+# TODO: Reference env variables here
 
 def prawConnection():
     return praw.Reddit(

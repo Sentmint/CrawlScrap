@@ -1,5 +1,5 @@
-from redditscraper.api.services import prawservice as praw
-from redditscraper.api.resources import subreddits as subs
+from reddit.services import prawservice as praw
+from reddit.resources import subreddits as subs
 from pathlib import Path
 import logging
 import json
