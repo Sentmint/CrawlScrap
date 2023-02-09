@@ -34,7 +34,7 @@ def getStockData(stockSymbol):
         print(key, ' : ', value)
      
     ## Create file storing scrapped contents
-    with open('../storage/ScrappedStockData.csv', 'w', encoding='UTF8') as file:  #w = write to file
+    with open('CrawlScrap/data_collected_output/yahoo/ScrappedStockData.csv', 'w', encoding='UTF8') as file:  #w = write to file
         # json.dump(stock_info, file)  #If want to write to json file
         csvFile = csv.writer(file)
         csvFile.writerow(stock_info.items())

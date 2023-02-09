@@ -6,5 +6,5 @@ __pycache__
 ﻿# sensitive
 **/secrets.py
 
-
+.DS_Store
 

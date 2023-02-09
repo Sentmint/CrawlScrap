@@ -199,7 +199,7 @@ def store_tweet_data_payload(dataPayload):
         - Writes to a CSV file containing the Extracted & Collected tweet cards
     """
     #-- TO CSV
-    directoryPath = 'CrawlScrap/asset_scrapper/api/database/data_storage'
+    directoryPath = 'CrawlScrap/data_collected_output/twitter'
     createdfileName = 'TwitterPayloadScrapped.csv'
     csvFile = os.path.join(directoryPath, createdfileName)
 
