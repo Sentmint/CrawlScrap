@@ -1,11 +1,10 @@
-## Scrape Stock Prices from Yahoo Finance with Python
-# Manual scrape if API does not cover what we need; writes to csv file
-
+""" Scrape Stock Prices from Yahoo Finance with Python using BeautifulSoup
+NOTE: 
+ Manually scrapes Yahoo Finance if API does not cover what we need
+"""
 import requests
-from bs4 import BeautifulSoup   #pip install requests bs4 (install above libs)
-# import json
-import csv
-
+from bs4 import BeautifulSoup
+import csv #json
 
 def getStockData(stockSymbol):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.0.0 Safari/537.36'}  #Good practice to customize header
@@ -14,7 +13,6 @@ def getStockData(stockSymbol):
     ## Query website/server to get data back from webpage
     request = requests.get(url, headers = headers) 
     #TEST: print(request.status_code)   # print(request.text)  #print(request.json())
-
 
     ## Parse thru HTML document and find certain element contents
     soup = BeautifulSoup(request.text, 'html.parser')
@@ -29,12 +27,12 @@ def getStockData(stockSymbol):
     }
 
     ## Pretty Print Dict manually (Without imports)
-    print('\n Creating file storing the following contents of SCRAPPED contents: \n')
+    print('\n Creating file storing the following contents of SCRAPED contents: \n')
     for key, value in stock_info.items():
         print(key, ' : ', value)
      
     ## Create file storing scrapped contents
-    with open('../storage/ScrappedStockData.csv', 'w', encoding='UTF8') as file:  #w = write to file
+    with open('../api/database/data_storage/ScrapedStockData.csv', 'w', encoding='UTF8') as file:  #w = write to file
         # json.dump(stock_info, file)  #If want to write to json file
         csvFile = csv.writer(file)
         csvFile.writerow(stock_info.items())
