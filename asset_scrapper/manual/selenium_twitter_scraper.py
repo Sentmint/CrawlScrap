@@ -3,15 +3,11 @@ Twitter Cards Scraper Python using Selenium
 NOTE:
  Overview Objective WorkFlow: 
  1. (Navigation) Log into Twitter --> Searches inputted keyword query ('ie: #TSLA') --> Select tab option (ie: 'Latest')
- 2. (Collection) EXTRACTS & COLLECTS Tweet Cards seen on page --> Scrolls --> REPEAT until condition met to stop... --> STORE all Tweet Cards extracted & collected
+ 2. (Collection) EXTRACTS & COLLECTS Tweet Cards seen on page --> Scrolls --> REPEAT until condition met to stop... 
+ 3. (Storage) --> STORE all Tweet Cards extracted & collected
  Runtime: O(n^2)   ~4.5 min long to complete with Scroll Count ~73 until reach end of page (Milestone Archive: ~10-15min/end of page; ~7-8min/~55 scrolls; ~4.5min/~73 scrolls)
  - Runs on Chrome web browser driver
- - Includes ability to handle unexpected lost/failure connection status to webpage: saves and overwrites extracted/collected data up to that point
- - Naming conventions:
-    - Classes = Snake + Camel case
-    - Functions = Snake case
-    - Variables = Camel case
- - Includes Logger library for messages (Good Practice than print())
+ - Includes ability to handle unexpected lost/failure connection status to webpage: saves and overwrites extracted/collected data up to that point of failed connection
  (Setup)
  - Forces fullscreen for best/foolproof results (Certain elements only appear with certain resolutions)
  - Uses dummy Twitter account
@@ -20,12 +16,14 @@ NOTE:
  - Filters DURING collection of tweet cards: view docstrings of EXTRACT and COLLECT functions (1 scroll collects about ~10 tweet cards)
  - Condition used to stop infinite scrolling: (MATCHING Y scroll pos of current VS new scroll height pos   OR   scroll counter limit) 
  (Storing)
- - Currently just being stored/written to CSV file
-TODO: 
-- Talk it out and Discuss options:
-    - Still store what was collected up until failed connection? [Maybe give user option to store and overwrite data or not?]
-    - Setup other web browsers other than Chrome if one fails? [Maybe give user option to choose?]
+ - Currently written to CSV or/and Binary file
+ - Send written data for further transformation/cleaning of data within ETL pipeline
+TODO: (OPTIONAL Addons)
 - Setup ENV variables in file for login credentials + other miscellaneous items? (Good code practice and security)
+- Discuss additional addon options to main functionality:
+    - Re-write this program but using Twitter API (IGNORE due to recent news that Twitter API no longer free Feb 2023)
+    - Failed connection data storage: Maybe give user option to store and overwrite data or not when connection failed? (Currently: Auto stores data collected up to point of failure)
+    - Setup other web browsers and give user option to choose? (Currently: Chrome)
 (Navigation)
  - With user input, dynamically setup custom navigation on Twitter?: 
     - Enter keyword for search query box (ie: '#TSLA')
@@ -34,13 +32,9 @@ TODO:
  - DOESNT support certain elements:
     - 'tweetTextAddon' = Person referencing tweet below (Needed or useful to collect and store?)
     - Images/gifs/videos/media text (Needed or useful to collect and store?)
- - Filter further DURING collection of tweet cards? (ie: Only english?)
- (Store)
- - Filter further AFTER storing the extracted & collected data? (Ie: Better data handling if continue to create own file, otherwise store in DATABASE)
- - Write to actual database instead: MongoDB?
 """
 
-import time, requests, logging, getpass, csv, os
+import time, requests, logging, getpass, csv, pickle, os
 
 from selenium.webdriver import Chrome #Firefox Browser: "Firefox" | Edge Browser: "from msedge.selenium_tools import Edge, EdgeOptions"
 from selenium.webdriver import ChromeOptions 
@@ -182,7 +176,7 @@ def collect_tweet_data_payload(tweetIdList):
     """
     driver.implicitly_wait(10) # To allow enough load time for webpage
     tweetCardList = driver.find_elements("xpath", '//article[@data-testid="tweet"]') # Get entire Tweet Card Payload element
-    for tweet in tweetCardList: # [-15:]:  # TODO: View LAST 15 items so removes need to recheck every tweet in list & reduces duplicates?? [Not implementated bc unsure if useful/needed with this implementation]
+    for tweet in tweetCardList: # [-15:]: #Commented out "[-15:]" views LAST 15 items so removes need to recheck every tweet in list & reduces duplicates [Commented out bc not needed with this implementation/unsure if useful anymore]
         data = extract_tweet_data_payload(tweet) #-- Function: extracts info from EACH Tweet Card using Selenium 
         if data: # If tweet card content extracted is NOT null
             #-- Check for duplicates collected (Make our OWN tweet ID)
@@ -197,18 +191,28 @@ def collect_tweet_data_payload(tweetIdList):
 def store_tweet_data_payload(dataPayload):
     """ Function STORES list of Tweets payload extracted and collected in desired format using Selenium
         - Writes to a CSV file containing the Extracted & Collected tweet cards
+        or/and
+        - Writes to a BINARY file containing the Extracted & Collected tweet cards
     """
-    #-- TO CSV
     directoryPath = 'CrawlScrap/asset_scrapper/api/database/data_storage'
-    createdfileName = 'TwitterPayloadScrapped.csv'
-    csvFile = os.path.join(directoryPath, createdfileName)
-
+    createdfileName = 'TwitterPayloadScrapped'
+    
+    #-- TO CSV
+    csvFile = os.path.join(directoryPath, createdfileName + ".csv")
     with open(csvFile, 'w', newline='', encoding='utf-8') as file: # Writing to file
         header = ['Username', 'Twitter Handle', 'Timestamp',
                   "Comments", "Retweets", "Likes", 'Text']
         writer = csv.writer(file)
         writer.writerow(header)
         writer.writerows(dataPayload)
+
+    #-- To Binary Format
+    binaryFile = os.path.join(directoryPath, createdfileName + ".bin")
+    with open(binaryFile, 'wb') as file:
+        header = ['Username', 'Twitter Handle', 'Timestamp',
+                "Comments", "Retweets", "Likes", 'Text']
+        data = [header] + dataPayload
+        pickle.dump(data, file)
 
     logger.info("<< STORED Tweets Payload >>")
 

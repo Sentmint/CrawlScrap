@@ -1,10 +1,10 @@
-## Scrape Stock Prices from Yahoo Finance with Python
-# Manual scrape if API does not cover what we need; writes to csv file
-
+""" Scrape Stock Prices from Yahoo Finance with Python using BeautifulSoup
+NOTE: 
+Manually scrapes Yahoo Finance if API does not cover what we need
+"""
 import requests
-from bs4 import BeautifulSoup   #pip install requests bs4 (install above libs)
-# import json
-import csv
+from bs4 import BeautifulSoup
+import csv #json
 
 
 def getStockData(stockSymbol):
@@ -14,7 +14,6 @@ def getStockData(stockSymbol):
     ## Query website/server to get data back from webpage
     request = requests.get(url, headers = headers) 
     #TEST: print(request.status_code)   # print(request.text)  #print(request.json())
-
 
     ## Parse thru HTML document and find certain element contents
     soup = BeautifulSoup(request.text, 'html.parser')
