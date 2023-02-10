@@ -29,6 +29,7 @@ TODO: (OPTIONAL Addons)
  - DOESNT support certain elements:
     - 'tweetTextAddon' = Person referencing tweet below (Needed or useful to collect and store?)
     - Images/gifs/videos/media text (Needed or useful to collect and store?)
+    - Look into ignore all media tags to improve runtime?
 """
 
 
@@ -195,7 +196,7 @@ def store_tweet_data_payload(dataPayload):
     """
     # print(os.getcwd()) # Show current dirc (Test)
     # print(os.listdir("../")) # Show files (Test)
-    directoryPath = '../api/database/data_storage/'
+    directoryPath = '../data_collected/twitter/'
     createdfileName = 'TwitterPayloadScraped'
     
     #-- TO CSV Format
