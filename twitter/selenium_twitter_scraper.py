@@ -29,8 +29,12 @@ TODO: (OPTIONAL Addons)
  - DOESNT support certain elements:
     - 'tweetTextAddon' = Person referencing tweet below (Needed or useful to collect and store?)
     - Images/gifs/videos/media text (Needed or useful to collect and store?)
+    - Look into ignore all media tags to improve runtime?
 """
+
+
 import time, requests, logging, getpass, csv, pickle, os
+from dotenv import load_dotenv #For envrionment variables
 from selenium.webdriver import Chrome #Firefox Browser: "Firefox" | Edge Browser: "from msedge.selenium_tools import Edge, EdgeOptions"
 from selenium.webdriver import ChromeOptions 
 from selenium.webdriver.chrome.service import Service  
@@ -192,7 +196,7 @@ def store_tweet_data_payload(dataPayload):
     """
     # print(os.getcwd()) # Show current dirc (Test)
     # print(os.listdir("../")) # Show files (Test)
-    directoryPath = '../api/database/data_storage/'
+    directoryPath = '../data_collected/twitter/'
     createdfileName = 'TwitterPayloadScraped'
     
     #-- TO CSV Format
@@ -221,6 +225,7 @@ def store_tweet_data_payload(dataPayload):
 ####################### LOGIC ##########################
 startTime = time.time() # Time Keeper
 logger = setup_logger() # Logging Messages
+load_dotenv() # Load environment variables from .env file
 
 #-- Create Instance of Webdriver 
 options = ChromeOptions()
@@ -237,13 +242,13 @@ driver.get("https://www.twitter.com/login")
 
 #-- Login to Twitter --
 username = driver.find_element("xpath", '//input[@class="r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu"]') #@type="text"
-username.send_keys('marco_cen2001@hotmail.com')
+username.send_keys(os.environ.get("TWITTER_USERNAME"))
 username.send_keys(Keys.RETURN) #-- Same as user clicking "NEXT" Button
 
 #-- If unusal activity confirmation page appears
 try:
     userConfirmation = driver.find_element("xpath", '//input[@data-testid="ocfEnterTextTextInput"]') # User Confirmation screen
-    userConfirmation.send_keys('ProudMC2')
+    userConfirmation.send_keys(os.environ.get("TWITTER_USER_CONFIRMATION"))
     userConfirmation.send_keys(Keys.RETURN)
 except NoSuchElementException:
     logger.info("No Extra User Confirmation Needed")
@@ -252,8 +257,7 @@ driver.implicitly_wait(10) # To allow enough load time for webpage
 
 #-- Enter PSWD Page
 pswd = driver.find_element("xpath", '//input[@type="password"]')
-userInputPswd = getpass.getpass()
-pswd.send_keys(userInputPswd) # (SETUP to manually type into console each time due to security) TODO: Set as ENV variable in separate hidden from version control file (Better practice and security)
+pswd.send_keys(os.environ.get("TWITTER_PSWD")) # (SETUP to manually type into console each time due to security)
 pswd.send_keys(Keys.RETURN)
 driver.implicitly_wait(10) # To allow enough load time for webpage
 
