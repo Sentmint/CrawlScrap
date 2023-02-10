@@ -90,7 +90,7 @@ def get_asset_recommendation():
 @asset_req_api.route("/download")
 def download_mass_stock_data():
     """
-    Returns a collection of data points about a stock or multiple stocks (CURRENTLY only supports one asset per request)
+    Returns a collection of data points about a stock or multiple stocks (CURRENTLY only supports one asset per request)z
 
     :query_arg period:     This is the period of the history looking for, such as 1d, 1mo, etc\n
     :query_arg interval:   This is the interval between data points, which are '1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', '5d', '1wk', '1mo', '3mo'

@@ -2,9 +2,4 @@
 __pycache__
 .env
 .idea
-
-﻿# sensitive
-**/secrets.py
-
 .DS_Store
-

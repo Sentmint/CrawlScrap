@@ -1,4 +1,4 @@
-def subredditList():
+def subreddit_list():
     return [
         "PersonalFinanceCanada",
         "Stocks",

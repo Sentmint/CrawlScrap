@@ -1,17 +1,18 @@
-from services import prawservice as praw
-from resources import subreddits as subs
 from pathlib import Path
+from reddit_service import praw_service as praw
+from reddit_resource import subreddits as subs
 import logging
 import json
 import time
 import os
 
+
 logging.basicConfig(level=logging.DEBUG)
 
 
-def top25scanner():
-    reddit = praw.prawConnection()
-    for subreddit in subs.subredditList():
+def top_25_scanner():
+    reddit = praw.praw_connection()
+    for subreddit in subs.subreddit_list():
         top25 = reddit.subreddit(subreddit).hot(limit=25)
         top25Submissions = []
         for submission in top25:
@@ -75,7 +76,7 @@ def top25scanner():
 
 
 def create_submission_json(submissions: list, subreddit):
-    path = "output/" + subreddit
+    path = "../data_collected/reddit/" + subreddit
     file = str(time.time()) + ".json"
     Path(path).mkdir(parents=True, exist_ok=True)
 
@@ -83,4 +84,4 @@ def create_submission_json(submissions: list, subreddit):
         json.dump(submissions, f)
 
 
-top25scanner()
+top_25_scanner()
