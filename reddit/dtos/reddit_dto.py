@@ -4,7 +4,7 @@ from praw.models import Redditor
 class SubmissionDto:
 
     def __init__(self, author: Redditor, created_utc: float, id: str, flair: str, num_comments: str, permalink: str,
-                 score: int, selftext: str, shortlink: str, subreddit_name_prefixed: str, title: str, ups: int,
+                 score: int, self_text: str, shortlink: str, subreddit_name_prefixed: str, title: str, ups: int,
                  upvote_ratio: float, url: str) -> None:
         self.author = author
         self.created_utc = created_utc
@@ -13,7 +13,7 @@ class SubmissionDto:
         self.num_comments = num_comments
         self.permalink = permalink
         self.score = score
-        self.selftext = selftext
+        self.self_text = self_text
         self.shortlink = shortlink
         self.subreddit_name_prefixed = subreddit_name_prefixed
         self.title = title
