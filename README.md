@@ -9,7 +9,23 @@ Requires a Reddit account with a script application defined. Quick guide availab
 
 The credentials for the PRAW connection are fetched from an env file that has to be created and populated manually when running this application for the first time. There is a `.env.template` available [here](.env.template); the three credentials needed for the Reddit application are `CLIENT_ID`, `CLIENT_SECRET`, and `USER_AGENT`.
 
-<br>
+
+
+## Running 
+
+### Version requirements
+``python --version`` <br>
+``Python 3.10.10`` <br> <br>
+``pip show praw`` <br>
+``Name: praw`` <br>
+``Version: 7.6.1`` <br>
+
+### Execution
+Enter the directory containing the reddit.py file: ``..\CrawlScrape\reddit`` <br>
+Application will start running once the command ``python reddit.py`` is entered
+Debugging is enabled by default, so the user will see each API call and it's response. <br>
+![prawDebugResponse](reddit/readme_resources/prawDebugResponse.png)
+
 
 ## API Limitations & API Definitions
 
