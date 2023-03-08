@@ -1,36 +1,43 @@
-<details>
-<summary>Testing</summary>
-
-</details>
-
 # Data Collection
 
-The collection of data scraped from various online website sources:
-| Source:                           | Summary: |
+    The collection of data scraped from various online website sources:
+| Source                            | Summary |
 |---------                          |----------|
-| 1. Twitter (w/o API usage)        | Twitter Cards Scraper Python using Selenium                                       |
-| 2. Reddit (w/ API usage)          |  User can provide a list of subreddits to scan. For each subreddit, the top 25 submissions (front page) of the subreddit will be scanned and the body of each comment within those 25 submissions will be stored with additional data such as upvote ratio or submission time     |
-| 3. Yahoo (w/ API usage)       |   TBD. Alpha Vantage.    |
+| Twitter         | (w/o API usage) Twitter Cards Scraper using Python and Selenium. Users input a custom search query and all tweet cards are extracted, collected, and stored until the end of the page; console logs are present throughout this process.                                       |
+| Reddit          | (w/ API usage) User can provide a list of subreddits to scan. For each subreddit, the top 25 submissions (front page) of the subreddit will be scanned and the body of each comment within those 25 submissions will be stored with additional data such as upvote ratio or submission time.     |
+| Yahoo       | (w/ API usage)  [TBD] Using the third party service "Alpha Vantage."    |
 |                                   |          |
 
+<details>
 
-
-
-
-<summary><font size="5"> Twitter </font></summary>
-
+<summary><font size="5">  Twitter </font></summary>
 
 ## Objective
 User Tweet Cards Content Scraper on Twitter
 
-## Overview Workflow
-    1. (Navigation) Log into Twitter --> Searches inputted keyword query ('ie: #TSLA') --> Select tab option (ie: 'Latest')
+## Workflow Execution Overview
+    1. (Navigation) 
+        a. Log into Twitter
+        b. Searches inputted keyword query ('ie: #TSLA')
+        c. Select tab option (ie: 'Latest')
 
-    2. (Collection) EXTRACTS & COLLECTS Tweet Cards seen on page --> Scrolls --> REPEAT until condition met to stop... (View "scroll_to_bottom" function)
+    2. (Collection) 
+        a. EXTRACTS & COLLECTS Tweet Cards seen on page
+        b. Scrolls page
+        c. REPEAT (Until condition met to stop: View "scroll_to_bottom" function)
 
-    3. (Storage) --> STORE all Tweet Cards extracted & collected in specified file format
+    3. (Storage)
+        a. STORE all Tweet Cards extracted & collected in specified file format
 
 ## Important Details
+
+### How to Run the Application
+
+1. Ensure all imports and libraries are valid
+2. Ensure .ENV variable file fields are valid
+3. Enter the directory containing the selenium_twitter_scraper.py file: ``..\CrawlScrape\twitter`` 
+<br>
+4. Application will start running once the command ``python selenium_twitter_scraper.py`` is entered
 
 ### Tools and Technologies Used
     - Python
@@ -50,27 +57,28 @@ User Tweet Cards Content Scraper on Twitter
     |               | ~10-15    |
     | ~55           | ~7-8      |
     | ~73           | ~4.5      |
-    | ~             | ~         |
     |               |           |
 
 ### Notes
 
-    (In General: SETUP)
+    In General, SETUP Section:
  - Runs on Chrome web browser driver
  - Includes ability to handle unexpected lost/failure connection status to webpage: saves and overwrites extracted/collected data up to that point of failed connection
  - Forces fullscreen for best/foolproof results (Certain elements only appear with certain resolutions)
- - Uses dummy Twitter account (Creds in .env variable file)
+ - Uses dummy Twitter account: creds in .ENV variable file (Password screen takes a bit to auto input)
+ - Optional TODO addons are listed within the top of the ``selenium_twitter_scraper.py`` file
 
-        (COLLECTION)
+        COLLECTION Section:
  
  - Filters DURING collection of tweet cards: view docstrings of <i> EXTRACT </i> and <i> COLLECT </i> functions (1 scroll collects about ~10 tweet cards)
  - Condition to stop infinite scrolling: (MATCHING Y scroll pos of current VS new scroll height pos   OR   scroll counter limit) 
 
-        (STORING)
+        STORING Section:
  
  - Currently written to CSV and Binary file
  - Send written data for further transformation/cleaning of data within ETL pipeline
 
+</details>
 
 
 <details>

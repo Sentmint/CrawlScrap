@@ -1,37 +1,19 @@
 """ Twitter Cards Scraper Python using Selenium
-NOTE:
- Overview Objective WorkFlow: 
- 1. (Navigation) Log into Twitter --> Searches inputted keyword query ('ie: #TSLA') --> Select tab option (ie: 'Latest')
- 2. (Collection) EXTRACTS & COLLECTS Tweet Cards seen on page --> Scrolls --> REPEAT until condition met to stop... (View "scroll_to_bottom" function) 
- 3. (Storage) --> STORE all Tweet Cards extracted & collected in specified file format
- Runtime: O(n^2)   ~7.5 min long to complete with Scroll Count ~110 until reach end of page (Milestone Archive: ~10-15min/end of page; ~7-8min/~55 scrolls; ~4.5min/~73 scrolls; )
- - Runs on Chrome web browser driver
- - Includes ability to handle unexpected lost/failure connection status to webpage: saves and overwrites extracted/collected data up to that point of failed connection
- (Setup)
- - Forces fullscreen for best/foolproof results (Certain elements only appear with certain resolutions)
- - Uses dummy Twitter account (Creds in .env variable file)
- (Collection)
- - Filters DURING collection of tweet cards: view docstrings of EXTRACT and COLLECT functions (1 scroll collects about ~10 tweet cards)
- - Condition to stop infinite scrolling: (MATCHING Y scroll pos of current VS new scroll height pos   OR   scroll counter limit) 
- (Storing)
- - Currently written to CSV or/and Binary file
- - Send written data for further transformation/cleaning of data within ETL pipeline
 TODO: (OPTIONAL Addons)
 - Discuss additional addon options to main functionality:
-    - Re-write this program but using Twitter API (IGNORE due to recent news that Twitter API no longer free: Feb 2023)
+    - Re-write this program but using Twitter API (IGNORED due to recent news that Twitter API no longer free: Feb 2023)
     - Failed connection data storage: Maybe give user OPTION on how to store data upon connection failure (Overwrite? Store separately?) [Currently: Overwrites data collected file up to point of failure]
     - Setup other web browsers and give user OPTION to choose? [Currently: Chrome]
-(Navigation)
+(NAVIGATION)
  - Setup custom search query navigation OPTIONS: 
-    - Search query box [Currently: '#TSLA']
     - Select which TAB to view  [Currently: 'Latest' Tab)
-(Collection)
- - DOESNT support certain elements:
-    - 'tweetTextAddon' = Person referencing tweet below (Needed or useful to collect and store?)
-    - Images/gifs/videos/media text (Needed or useful to collect and store?)
-    - Look into ignore all media tags to improve runtime?
+(COLLECTION)
+ - DOESNT support certain elements: (Needed or useful to collect and store?)
+    - 'tweetTextAddon' = Person referencing tweet below
+    - Images/gifs/videos/media text 
+    - Look into ignoring all media tags to improve runtime?
+ - Edge/Outlier case may exist where user posts content that the webpage css does not exist so crash application?
 """
-
 
 import time, requests, logging, getpass, csv, pickle, os
 from dotenv import load_dotenv #For envrionment variables
@@ -257,13 +239,13 @@ driver.implicitly_wait(10) # To allow enough load time for webpage
 
 #-- Enter PSWD Page
 pswd = driver.find_element("xpath", '//input[@type="password"]')
-pswd.send_keys(os.environ.get("TWITTER_PSWD")) # (SETUP to manually type into console each time due to security)
+pswd.send_keys(os.environ.get("TWITTER_PSWD"))
 pswd.send_keys(Keys.RETURN)
 driver.implicitly_wait(10) # To allow enough load time for webpage
 
 #-- Go to search box and type keyword to search --
 searchInput = driver.find_element("xpath", '//input[@data-testid="SearchBox_Search_Input"]')
-searchInput.send_keys('#TSLA')  ## SEARCH TERM TODO: Select custom search query to look up?
+searchInput.send_keys(os.environ.get("TWITTER_SEARCH_QUERY"))
 searchInput.send_keys(Keys.RETURN) 
 
 #-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
