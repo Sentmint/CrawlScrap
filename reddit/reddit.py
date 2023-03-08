@@ -29,7 +29,7 @@ def top_25_scanner():
             curr.comments.replace_more(limit=None, threshold=0)  # Fetch all comments and their children
             for comment in curr.comments.list():  # Create a list of all comments to eliminate hierarchy
                 comments.append({
-                    "commentAuthor": comment.author_fullname if hasattr(comment, 'author_fullname') else "null",
+                    "comment_author": comment.author_fullname if hasattr(comment, 'author_fullname') else "null",
                     # Note: Shadowbanned redditors do not have any of these fields available.
                     # "commentAuthor": [{
                     #     "id": comment.author.id,
@@ -57,8 +57,8 @@ def top_25_scanner():
                 "upvote": submission.ups,
                 "score": submission.score,
                 "upvote_ratio": submission.upvote_ratio,
-                "selfText": submission.selftext,
-                "selfUrl": submission.url,
+                "self_text": submission.selftext,
+                "self_url": submission.url,
                 "permalink": submission.permalink,
                 "shortlink": submission.shortlink,
                 "author": submission.author_fullname if hasattr(submission, 'author_fullname') else "null",
@@ -69,7 +69,7 @@ def top_25_scanner():
                 #     "submissionKarma": submission.author.link_karma,
                 #     "accountCreated": submission.author.created_utc,
                 #     } if submission.author is not None and not hasattr(submission.author, 'is_suspended') else "null"],
-                "commentCount": submission.num_comments,
+                "comment_count": submission.num_comments,
                 "comments": comments
             })
         create_submission_json(top25Submissions, subreddit)
