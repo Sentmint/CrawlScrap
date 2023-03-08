@@ -81,7 +81,7 @@ User Tweet Cards Content Scraper on Twitter
 
 ## Built using the Python Reddit API Wrapper [PRAW](https://praw.readthedocs.io/en/latest/index.html)
 
-When this application is run, it will scan and fetch comments from the front page of the given subreddits <br>
+When this application is run, it will scan and fetch comments from the front page of the given subreddits. <br>
 Folders corresponding to the scanned subreddit will be created [here](data_collected/reddit) (if needed) and populated with a JSON; the JSON's filename will be when the JSON was produced. 
 
 ## Connecting
@@ -92,7 +92,7 @@ The credentials for the PRAW connection are fetched from an env file that has to
 
 
 
-## Running 
+## Setup & Running 
 
 ### Version requirements
 ``python --version`` <br>
@@ -101,8 +101,11 @@ The credentials for the PRAW connection are fetched from an env file that has to
 ``Name: praw`` <br>
 ``Version: 7.6.1`` <br>
 
+### Setting up desired subreddits to be scanned
+The reddit scraper will evaluate a given array of subreddit strings defined in ``..\CrawlScrape\reddit\reddit_resource\subreddits.py`` which can be found [here](reddit/reddit_resource/subreddits.py)
+
 ### Execution
-Enter the directory containing the reddit.py file: ``..\CrawlScrape\reddit`` <br>
+Enter the directory containing the reddit.py file: ``..\CrawlScrape\reddit\reddit.py`` <br>
 Application will start running once the command ``python reddit.py`` is entered
 Debugging is enabled by default, so the user will see each API call and it's response. <br>
 ![prawDebugResponse](reddit/readme_resources/prawDebugResponse.png)
