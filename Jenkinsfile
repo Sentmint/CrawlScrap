@@ -5,7 +5,14 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
+                echo "${REDDIT_CLIENT_ID}"
+                sh "python3 --version"
+                sh "pip --version"
+                sh "pip install praw"
+                sh "pip install pip install python-dotenv"
+                dir("reddit"){
+                    sh "python3 reddit.py"
+                }
             }
         }
         stage('Test') {
@@ -15,7 +22,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                echo 'No deployment logic currently exists.'
             }
         }
     }
