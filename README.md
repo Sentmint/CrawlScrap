@@ -33,10 +33,9 @@ User Tweet Cards Content Scraper on Twitter
 
 ### How to Run the Application
 
-1. Ensure all imports and libraries are valid
-2. Ensure .ENV variable file fields are valid
+1. Ensure .ENV variable file fields are valid
+2. Ensure the custom search query resources file are satisfied
 3. Enter the directory containing the selenium_twitter_scraper.py file: ``..\CrawlScrape\twitter`` 
-<br>
 4. Application will start running once the command ``python selenium_twitter_scraper.py`` is entered
 
 ### Tools and Technologies Used
@@ -62,21 +61,25 @@ User Tweet Cards Content Scraper on Twitter
 ### Notes
 
     In General, SETUP Section:
+    
  - Runs on Chrome web browser driver
+ - First time run takes a bit longer
  - Includes ability to handle unexpected lost/failure connection status to webpage: saves and overwrites extracted/collected data up to that point of failed connection
  - Forces fullscreen for best/foolproof results (Certain elements only appear with certain resolutions)
- - Uses dummy Twitter account: creds in .ENV variable file (Password screen takes a bit to auto input)
+ - Uses dummy Twitter account: creds in .ENV variable file
  - Optional TODO addons are listed within the top of the ``selenium_twitter_scraper.py`` file
+
 
         COLLECTION Section:
  
  - Filters DURING collection of tweet cards: view docstrings of <i> EXTRACT </i> and <i> COLLECT </i> functions (1 scroll collects about ~10 tweet cards)
  - Condition to stop infinite scrolling: (MATCHING Y scroll pos of current VS new scroll height pos   OR   scroll counter limit) 
+ - File includes ability to test data collection on smaller/sample scale (View Code Comments)
 
         STORING Section:
- 
- - Currently written to CSV and Binary file
- - Send written data for further transformation/cleaning of data within ETL pipeline
+
+ - Format: `` ../twitter/<custom search query inputted>/<UTC time stamp at which data was collected> ``
+ - Currently written to CSV and Binary file formats
 
 </details>
 
