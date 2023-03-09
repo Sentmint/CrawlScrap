@@ -4,9 +4,9 @@ TODO: (OPTIONAL Addons)
     - Re-write this program but using Twitter API (IGNORED due to recent news that Twitter API no longer free: Feb 2023)
     - Failed connection data storage: Maybe give user OPTION on how to store data upon connection failure (Overwrite? Store separately?) [Currently: Overwrites data collected file up to point of failure]
     - Setup other web browsers and give user OPTION to choose? [Currently: Chrome]
+    - More efficient performance/runtime (Ex: Clearing search box)
 (NAVIGATION)
- - Setup custom search query navigation OPTIONS: 
-    - Select which TAB to view  [Currently: 'Latest' Tab)
+ - Setup which TAB to select and view  [Currently: 'Latest' Tab)
 (COLLECTION)
  - DOESNT support certain elements: (Needed or useful to collect and store?)
     - 'tweetTextAddon' = Person referencing tweet below
@@ -16,12 +16,14 @@ TODO: (OPTIONAL Addons)
 """
 
 import time, requests, logging, getpass, csv, pickle, os
+from search_query import search_query_list
 from dotenv import load_dotenv #For envrionment variables
 from selenium.webdriver import Chrome #Firefox Browser: "Firefox" | Edge Browser: "from msedge.selenium_tools import Edge, EdgeOptions"
 from selenium.webdriver import ChromeOptions 
 from selenium.webdriver.chrome.service import Service  
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 
 
@@ -106,12 +108,12 @@ def scroll_to_bottom():
 
             #-- [OR] --
 
-            ######## START ########
+            # ####### START ########
             # ## <<  2. >>>
             # # Mainly just for TESTING with sample size (Change # to set scroll limit)
             # testWithSampleSize = 3
             # if scrollCount == testWithSampleSize: break
-            ####### END #########
+            # ###### END #########
 
         else: # Invalid connection status
             break 
@@ -169,7 +171,7 @@ def collect_tweet_data_payload(tweetIdList):
     logger.info("-- Extracted and Collected Tweets Payload --")
 
 
-def store_tweet_data_payload(dataPayload):
+def store_tweet_data_payload(searchQuery, dataPayload):
     """ Function STORES list of Tweets payload extracted and collected in desired format using Selenium.
         Containing the Extracted & Collected tweet cards, write to a:
         - CSV file
@@ -178,8 +180,13 @@ def store_tweet_data_payload(dataPayload):
     """
     # print(os.getcwd()) # Show current dirc (Test)
     # print(os.listdir("../")) # Show files (Test)
-    directoryPath = '../data_collected/twitter/'
-    createdfileName = 'TwitterPayloadScraped'
+
+    #-- Create dir path if not already exist
+    if not os.path.exists('../data_collected/twitter/' + searchQuery + "/"):
+        os.makedirs('../data_collected/twitter/' + searchQuery + "/")
+
+    directoryPath = '../data_collected/twitter/' + searchQuery + "/"
+    createdfileName = str(time.time())
     
     #-- TO CSV Format
     csvFile = os.path.join(directoryPath, createdfileName + ".csv")
@@ -241,29 +248,36 @@ driver.implicitly_wait(10) # To allow enough load time for webpage
 pswd = driver.find_element("xpath", '//input[@type="password"]')
 pswd.send_keys(os.environ.get("TWITTER_PSWD"))
 pswd.send_keys(Keys.RETURN)
-driver.implicitly_wait(10) # To allow enough load time for webpage
 
-#-- Go to search box and type keyword to search --
-searchInput = driver.find_element("xpath", '//input[@data-testid="SearchBox_Search_Input"]')
-searchInput.send_keys(os.environ.get("TWITTER_SEARCH_QUERY"))
-searchInput.send_keys(Keys.RETURN) 
+#-- Iterate through all custom search queries set
+for query in search_query_list():
+    driver.implicitly_wait(10) # To allow enough load time for webpage
 
-#-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
-driver.find_element("xpath", "//span[text()='Latest']").click()
+    #-- Find search box --
+    searchInput = driver.find_element("xpath", '//input[@data-testid="SearchBox_Search_Input"]')
 
-try:
-    payloadCollected = [] # Finalized extracted & collected tweet cards to be stored used in COLLECTION process (NOTE: Initalized here to still be able to store data if failure occurs)
-
-    #-- Scroll to get entire PAGE of Tweets (Either bottom of the page or set limit condition reached) --
-    scroll_to_bottom()
+    # (For future iterations): Clear search input box to ensure on next iteration its cleared
+    searchInput.send_keys(Keys.BACKSPACE * len(searchInput.get_attribute('value'))) # Slowest solution but only one that works!? (Using Backspaces to clear)
     
-except Exception as eMsg: # Possible Edge case: Element reference lost from DOM due to dynamic loading of page (".click()" or ".text" ref on element may get lost if load too fast)
-    logger.debug("Function 'scroll_to_bottom' while loop exception occurred: << " + str(eMsg) + " >>") 
+    #-- Search the keyword
+    searchInput.send_keys(query)
+    searchInput.send_keys(Keys.RETURN) 
 
-#-- STORE Data Collected
-store_tweet_data_payload(payloadCollected)
+    #-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
+    driver.find_element("xpath", "//span[text()='Latest']").click()
 
-logger.info("--- %s Minutes ---" % ((time.time() - startTime) / 60))  # Reference for time keeping sake 
+    try:
+        payloadCollected = [] # Finalized extracted & collected tweet cards to be stored used in COLLECTION process (NOTE: Initalized here to still be able to store data if failure occurs)
+
+        #-- Scroll to get entire PAGE of Tweets (Either bottom of the page or set limit condition reached) --
+        scroll_to_bottom()
+        
+    except Exception as eMsg: # Possible Edge case: Element reference lost from DOM due to dynamic loading of page (".click()" or ".text" ref on element may get lost if load too fast)
+        logger.debug("Function 'scroll_to_bottom' while loop exception occurred: << " + str(eMsg) + " >>") 
+
+    #-- STORE Data Collected
+    store_tweet_data_payload(query, payloadCollected)
+    logger.info("--- %s Minutes for search query [ %s ] ---" % ( ((time.time() - startTime) / 60) , query))  # Reference for time keeping sake 
 
 #-- CLOSE browser to save resources (Good practice)
 # driver.close() # Closes focused opened browser window
