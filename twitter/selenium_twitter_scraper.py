@@ -1,12 +1,12 @@
 """ Twitter Cards Scraper Python using Selenium
-TODO: (OPTIONAL Addons)
+TODO NOTE: OPTIONAL Addons below
 - Discuss additional addon options to main functionality:
     - Re-write this program but using Twitter API (IGNORED due to recent news that Twitter API no longer free: Feb 2023)
     - Failed connection data storage: Maybe give user OPTION on how to store data upon connection failure (Overwrite? Store separately?) [Currently: Overwrites data collected file up to point of failure]
     - Setup other web browsers and give user OPTION to choose? [Currently: Chrome]
+    - More efficient performance/runtime (Ex: Clearing search box)
 (NAVIGATION)
- - Setup custom search query navigation OPTIONS: 
-    - Select which TAB to view  [Currently: 'Latest' Tab)
+ - Setup which TAB to select and view  [Currently: 'Latest' Tab)
 (COLLECTION)
  - DOESNT support certain elements: (Needed or useful to collect and store?)
     - 'tweetTextAddon' = Person referencing tweet below
@@ -15,7 +15,11 @@ TODO: (OPTIONAL Addons)
  - Edge/Outlier case may exist where user posts content that the webpage css does not exist so crash application?
 """
 
+<<<<<<< HEAD
 import time, requests, logging, csv, pickle, os
+=======
+import time, requests, logging, getpass, csv, pickle, os
+>>>>>>> 29f1857 ([STM-86] Twitter Customm Search Query List Finalized; Refactored some code for better usability/scalability; Cleaned up more organization of structure to follow similar convention as Reddit)
 from search_query import search_query_list
 from dotenv import load_dotenv #For envrionment variables
 from selenium.webdriver import Chrome #Firefox Browser: "Firefox" | Edge Browser: "from msedge.selenium_tools import Edge, EdgeOptions"
@@ -23,6 +27,7 @@ from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.service import Service  
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 
 
@@ -107,12 +112,12 @@ def scroll_to_bottom():
 
             #-- [OR] --
 
-            ######## START ########
+            # ####### START ########
             # ## <<  2. >>>
             # # Mainly just for TESTING with sample size (Change # to set scroll limit)
             # testWithSampleSize = 3
             # if scrollCount == testWithSampleSize: break
-            ####### END #########
+            # ###### END #########
 
         else: # Invalid connection status
             break 
@@ -170,7 +175,7 @@ def collect_tweet_data_payload(tweetIdList):
     logger.info("-- Extracted and Collected Tweets Payload --")
 
 
-def store_tweet_data_payload(dataPayload):
+def store_tweet_data_payload(searchQuery, dataPayload):
     """ Function STORES list of Tweets payload extracted and collected in desired format using Selenium.
         Containing the Extracted & Collected tweet cards, write to a:
         - CSV file
@@ -179,8 +184,13 @@ def store_tweet_data_payload(dataPayload):
     """
     # print(os.getcwd()) # Show current dirc (Test)
     # print(os.listdir("../")) # Show files (Test)
-    directoryPath = '../data_collected/twitter/'
-    createdfileName = 'TwitterPayloadScraped'
+
+    #-- Create dir path if not already exist
+    if not os.path.exists('../data_collected/twitter/' + searchQuery + "/"):
+        os.makedirs('../data_collected/twitter/' + searchQuery + "/")
+
+    directoryPath = '../data_collected/twitter/' + searchQuery + "/"
+    createdfileName = str(time.time())
     
     #-- TO CSV Format
     csvFile = os.path.join(directoryPath, createdfileName + ".csv")
@@ -213,37 +223,39 @@ load_dotenv() # Load environment variables from .env file
 #-- Create Instance of Webdriver 
 user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36' #'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
 options = ChromeOptions()
+<<<<<<< HEAD
 # (In order to run CI agent account on Ubuntu server (within Jenkins Build Environment)
 options.add_argument("--no-sandbox") # Bypass OS security model (Has to be first option) 
 options.add_argument("--disable-dev-shm-usage") # overcome limited resource problems
 options.add_argument(f'user-agent={user_agent}') # Needed for headless mode
-
-options.add_argument('--headless') # TODO: (Any underlying bugs?) Runs Chrome Driver Headless (without actual browser) [Comment out to debug WITH browser]
-# (Needed JIC if headless mode doesnt work? Unsure)
+options.add_argument('--headless') # Runs Chrome Driver without actual browser [NOTE: Comment out to debug WITH browser]
+# (IF needed JIC for headless mode not working)
 # options.add_argument("--disable-gpu") # [Unnecesary if have --headless flag] Applicable to windows os only 
 # options.add_argument('--ignore-certificate-errors') #Fix possible invalid SSL certificate
-# options.add_argument("--allow-insecure-localhost")
 # options.add_argument('--allow-running-insecure-content') #Fix possible invalid SSL certificate
+# options.add_argument("--allow-insecure-localhost")
 # options.add_argument("--proxy-server='direct://'")
 # options.add_argument("--proxy-bypass-list=*")
-# options.add_argument('--user-data-dir=~/.config/google-chrome') # Fixed permission issue with CI agent account on Ubuntu server (Jenkins)
-# options.add_argument('--remote-debugging-port=9222') # [No work without Headless? Not connected to DevTools]
-
+# options.add_argument('--user-data-dir=~/.config/google-chrome') # Supposed fix to permission issue with CI agent account on Ubuntu server
 options.add_argument("--disable-extensions") # disabling extensions 
 options.add_argument("--disable-infobars") # disabling infobars (Info text sometimes given by browser)
-options.add_argument("--window-size=1920,1080") # JIC if screen too small
+options.add_argument("--window-size=1920,1080") # JIC if screen too small (Fix bug in headless mode)
 options.add_argument("--start-maximized") # Double JIC: open Browser in maximized mode [Some elements only found on bigger screen resolution]
 
 options.add_experimental_option('excludeSwitches', ['enable-logging']) # This IGNORES unfixable chrome web driver logs
-
-logger.info("--- [INFO] Jenkins Build: THIRD Added Jenkins Options Argument ---") 
-logger.debug("--- [DEBUG] Jenkins Build: THIRD Added Jenkins Options Argument ---") 
 driver = Chrome(service=Service(ChromeDriverManager().install()), options=options) #Firefox: "Firefox" | Edge: "options = EdgeOptions(); options.use_chromium = True; driver = Edge(options=options)"
-logger.info("--- [INFO] Jenkins Build: FOURTH Do I get past creating Chrome driver ---") 
-logger.debug("--- [DEBUG] Jenkins Build: FOURTH Do I get past creating Chrome driver ---  ") 
+logger.debug("--- Created Chrome driver ---  ") 
+=======
+# (In order to run within Jenkins Envrionment)
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-gpu")
+options.add_argument('--headless')
+options.add_experimental_option('excludeSwitches', ['enable-logging']) # This IGNORES unfixable chrome web driver logs
+driver = Chrome(service=Service(ChromeDriverManager().install()), options=options) #Firefox: "Firefox" | Edge: "options = EdgeOptions(); options.use_chromium = True; driver = Edge(options=options)"
+>>>>>>> e37370e ([STM-88] Minor bug to previous commit. SQUASH BUG)
 
-#-- Gives more time to load webpage to find elements
-driver.implicitly_wait(20) # Better Practice to use this than time.sleep() (Unlike 'time.sleep()', 'driver.implicitly_wait()' is NOT a FIXED wait time)
+driver.implicitly_wait(20) # Better Practice to use this than time.sleep() (Unlike 'time.sleep()', 'driver.implicitly_wait()' is NOT a FIXED wait time) [Gives more time to load webpage to find elements]
 
 #-- Go to first landing page [TRAVERSING Thru Twitter]
 driver.get("https://www.twitter.com/login")
@@ -253,13 +265,13 @@ username = driver.find_element("xpath", '//input[@class="r-30o5oe r-1niwhzg r-17
 username.send_keys(os.environ.get("TWITTER_USERNAME"))
 username.send_keys(Keys.RETURN) #-- Same as user clicking "NEXT" Button
 
-#-- If unusal activity confirmation page appears
+#-- (FIRST) If unusal activity confirmation page appears (User Confirmation via Twitter USERNAME handle!)
 try:
     userConfirmation = driver.find_element("xpath", '//input[@data-testid="ocfEnterTextTextInput"]') # User Confirmation screen
     userConfirmation.send_keys(os.environ.get("TWITTER_USER_CONFIRMATION"))
     userConfirmation.send_keys(Keys.RETURN)
 except NoSuchElementException:
-    logger.info("No Extra User Confirmation Needed")
+    logger.info("No Extra User Confirmation Needed (Twitter USERNAME handle)")
 
 driver.implicitly_wait(10) # To allow enough load time for webpage
 
@@ -267,28 +279,64 @@ driver.implicitly_wait(10) # To allow enough load time for webpage
 pswd = driver.find_element("xpath", '//input[@type="password"]')
 pswd.send_keys(os.environ.get("TWITTER_PSWD"))
 pswd.send_keys(Keys.RETURN)
-driver.implicitly_wait(10) # To allow enough load time for webpage
+<<<<<<< HEAD
+
+#-- (SECOND) If unusal activity confirmation page appears (User Confirmation via EMAIL confirmation code sent!)
+try:
+    driver.find_element("xpath", '//input[@data-testid="ocfEnterTextTextInput"]') # User Confirmation Code screen/alert appears
+    logger.warn("Oopsie! Ran Twitter Scraper consecutively too many times: Requires user confirmation code sent to email or else account temporarily blocked (NOT HANDLED in Code)")
+except NoSuchElementException:
+    logger.info("No Extra User Confirmation Code Needed (EMAIL confirmation code)")
 
 #-- Iterate through all custom search queries set
 for query in search_query_list():
     driver.implicitly_wait(20) # To allow enough load time for webpage
-
-#-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
-driver.find_element("xpath", "//span[text()='Latest']").click()
-
-try:
-    payloadCollected = [] # Finalized extracted & collected tweet cards to be stored used in COLLECTION process (NOTE: Initalized here to still be able to store data if failure occurs)
-
-    #-- Scroll to get entire PAGE of Tweets (Either bottom of the page or set limit condition reached) --
-    scroll_to_bottom()
     
-except Exception as eMsg: # Possible Edge case: Element reference lost from DOM due to dynamic loading of page (".click()" or ".text" ref on element may get lost if load too fast)
-    logger.debug("Function 'scroll_to_bottom' while loop exception occurred: << " + str(eMsg) + " >>") 
+    #-- Find search box --
+    searchInput = driver.find_element("xpath", '//input[@data-testid="SearchBox_Search_Input"]')
 
-#-- STORE Data Collected
-store_tweet_data_payload(payloadCollected)
+    # (For future iterations): Clear search input box to ensure on next iteration its cleared
+    searchInput.send_keys(Keys.BACKSPACE * len(searchInput.get_attribute('value'))) # Slowest solution but only one that works!? (Using Backspaces to clear)
+    
+    #-- Search the keyword
+    searchInput.send_keys(query)
+    searchInput.send_keys(Keys.RETURN) 
 
-logger.info("--- %s Minutes ---" % ((time.time() - startTime) / 60))  # Reference for time keeping sake 
+    #-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
+    driver.find_element("xpath", "//span[text()='Latest']").click()
+
+=======
+
+#-- Iterate through all custom search queries set
+for query in search_query_list():
+    driver.implicitly_wait(10) # To allow enough load time for webpage
+
+    #-- Find search box --
+    searchInput = driver.find_element("xpath", '//input[@data-testid="SearchBox_Search_Input"]')
+
+    # (For future iterations): Clear search input box to ensure on next iteration its cleared
+    searchInput.send_keys(Keys.BACKSPACE * len(searchInput.get_attribute('value'))) # Slowest solution but only one that works!? (Using Backspaces to clear)
+    
+    #-- Search the keyword
+    searchInput.send_keys(query)
+    searchInput.send_keys(Keys.RETURN) 
+
+    #-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
+    driver.find_element("xpath", "//span[text()='Latest']").click()
+
+>>>>>>> 29f1857 ([STM-86] Twitter Customm Search Query List Finalized; Refactored some code for better usability/scalability; Cleaned up more organization of structure to follow similar convention as Reddit)
+    try:
+        payloadCollected = [] # Finalized extracted & collected tweet cards to be stored used in COLLECTION process (NOTE: Initalized here to still be able to store data if failure occurs)
+
+        #-- Scroll to get entire PAGE of Tweets (Either bottom of the page or set limit condition reached) --
+        scroll_to_bottom()
+        
+    except Exception as eMsg: # Possible Edge case: Element reference lost from DOM due to dynamic loading of page (".click()" or ".text" ref on element may get lost if load too fast)
+        logger.debug("Function 'scroll_to_bottom' while loop exception occurred: << " + str(eMsg) + " >>") 
+
+    #-- STORE Data Collected
+    store_tweet_data_payload(query, payloadCollected)
+    logger.info("--- %s Minutes for search query [ %s ] ---" % ( ((time.time() - startTime) / 60) , query))  # Reference for time keeping sake 
 
 #-- CLOSE browser to save resources (Good practice)
 # driver.close() # Closes focused opened browser window
