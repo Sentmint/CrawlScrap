@@ -15,7 +15,8 @@ TODO: (OPTIONAL Addons)
  - Edge/Outlier case may exist where user posts content that the webpage css does not exist so crash application?
 """
 
-import time, requests, logging, getpass, csv, pickle, os
+import time, requests, logging, csv, pickle, os
+from search_query import search_query_list
 from dotenv import load_dotenv #For envrionment variables
 from selenium.webdriver import Chrome #Firefox Browser: "Firefox" | Edge Browser: "from msedge.selenium_tools import Edge, EdgeOptions"
 from selenium.webdriver import ChromeOptions 
@@ -210,13 +211,38 @@ logger = setup_logger() # Logging Messages
 load_dotenv() # Load environment variables from .env file
 
 #-- Create Instance of Webdriver 
+user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36' #'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
 options = ChromeOptions()
+# (In order to run CI agent account on Ubuntu server (within Jenkins Build Environment)
+options.add_argument("--no-sandbox") # Bypass OS security model (Has to be first option) 
+options.add_argument("--disable-dev-shm-usage") # overcome limited resource problems
+options.add_argument(f'user-agent={user_agent}') # Needed for headless mode
+
+options.add_argument('--headless') # TODO: (Any underlying bugs?) Runs Chrome Driver Headless (without actual browser) [Comment out to debug WITH browser]
+# (Needed JIC if headless mode doesnt work? Unsure)
+# options.add_argument("--disable-gpu") # [Unnecesary if have --headless flag] Applicable to windows os only 
+# options.add_argument('--ignore-certificate-errors') #Fix possible invalid SSL certificate
+# options.add_argument("--allow-insecure-localhost")
+# options.add_argument('--allow-running-insecure-content') #Fix possible invalid SSL certificate
+# options.add_argument("--proxy-server='direct://'")
+# options.add_argument("--proxy-bypass-list=*")
+# options.add_argument('--user-data-dir=~/.config/google-chrome') # Fixed permission issue with CI agent account on Ubuntu server (Jenkins)
+# options.add_argument('--remote-debugging-port=9222') # [No work without Headless? Not connected to DevTools]
+
+options.add_argument("--disable-extensions") # disabling extensions 
+options.add_argument("--disable-infobars") # disabling infobars (Info text sometimes given by browser)
+options.add_argument("--window-size=1920,1080") # JIC if screen too small
+options.add_argument("--start-maximized") # Double JIC: open Browser in maximized mode [Some elements only found on bigger screen resolution]
+
 options.add_experimental_option('excludeSwitches', ['enable-logging']) # This IGNORES unfixable chrome web driver logs
-driver = Chrome(service=Service(ChromeDriverManager().install()), options=options)
-#Firefox: "Firefox" | Edge: "options = EdgeOptions(); options.use_chromium = True; driver = Edge(options=options)"
+
+logger.info("--- [INFO] Jenkins Build: THIRD Added Jenkins Options Argument ---") 
+logger.debug("--- [DEBUG] Jenkins Build: THIRD Added Jenkins Options Argument ---") 
+driver = Chrome(service=Service(ChromeDriverManager().install()), options=options) #Firefox: "Firefox" | Edge: "options = EdgeOptions(); options.use_chromium = True; driver = Edge(options=options)"
+logger.info("--- [INFO] Jenkins Build: FOURTH Do I get past creating Chrome driver ---") 
+logger.debug("--- [DEBUG] Jenkins Build: FOURTH Do I get past creating Chrome driver ---  ") 
 
 #-- Gives more time to load webpage to find elements
-driver.maximize_window() # Some elements only found on bigger screen resolution
 driver.implicitly_wait(20) # Better Practice to use this than time.sleep() (Unlike 'time.sleep()', 'driver.implicitly_wait()' is NOT a FIXED wait time)
 
 #-- Go to first landing page [TRAVERSING Thru Twitter]
@@ -243,10 +269,9 @@ pswd.send_keys(os.environ.get("TWITTER_PSWD"))
 pswd.send_keys(Keys.RETURN)
 driver.implicitly_wait(10) # To allow enough load time for webpage
 
-#-- Go to search box and type keyword to search --
-searchInput = driver.find_element("xpath", '//input[@data-testid="SearchBox_Search_Input"]')
-searchInput.send_keys(os.environ.get("TWITTER_SEARCH_QUERY"))
-searchInput.send_keys(Keys.RETURN) 
+#-- Iterate through all custom search queries set
+for query in search_query_list():
+    driver.implicitly_wait(20) # To allow enough load time for webpage
 
 #-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
 driver.find_element("xpath", "//span[text()='Latest']").click()
