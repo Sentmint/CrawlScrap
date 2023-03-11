@@ -15,11 +15,8 @@ TODO NOTE: OPTIONAL Addons below
  - Edge/Outlier case may exist where user posts content that the webpage css does not exist so crash application?
 """
 
-<<<<<<< HEAD
+
 import time, requests, logging, csv, pickle, os
-=======
-import time, requests, logging, getpass, csv, pickle, os
->>>>>>> 29f1857 ([STM-86] Twitter Customm Search Query List Finalized; Refactored some code for better usability/scalability; Cleaned up more organization of structure to follow similar convention as Reddit)
 from search_query import search_query_list
 from dotenv import load_dotenv #For envrionment variables
 from selenium.webdriver import Chrome #Firefox Browser: "Firefox" | Edge Browser: "from msedge.selenium_tools import Edge, EdgeOptions"
@@ -27,7 +24,6 @@ from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.service import Service  
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 
 
@@ -223,7 +219,6 @@ load_dotenv() # Load environment variables from .env file
 #-- Create Instance of Webdriver 
 user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36' #'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
 options = ChromeOptions()
-<<<<<<< HEAD
 # (In order to run CI agent account on Ubuntu server (within Jenkins Build Environment)
 options.add_argument("--no-sandbox") # Bypass OS security model (Has to be first option) 
 options.add_argument("--disable-dev-shm-usage") # overcome limited resource problems
@@ -237,23 +232,14 @@ options.add_argument('--headless') # Runs Chrome Driver without actual browser [
 # options.add_argument("--proxy-server='direct://'")
 # options.add_argument("--proxy-bypass-list=*")
 # options.add_argument('--user-data-dir=~/.config/google-chrome') # Supposed fix to permission issue with CI agent account on Ubuntu server
-options.add_argument("--disable-extensions") # disabling extensions 
+options.add_argument("--disable-extensions") # disabling extensions
 options.add_argument("--disable-infobars") # disabling infobars (Info text sometimes given by browser)
 options.add_argument("--window-size=1920,1080") # JIC if screen too small (Fix bug in headless mode)
 options.add_argument("--start-maximized") # Double JIC: open Browser in maximized mode [Some elements only found on bigger screen resolution]
 
 options.add_experimental_option('excludeSwitches', ['enable-logging']) # This IGNORES unfixable chrome web driver logs
 driver = Chrome(service=Service(ChromeDriverManager().install()), options=options) #Firefox: "Firefox" | Edge: "options = EdgeOptions(); options.use_chromium = True; driver = Edge(options=options)"
-logger.debug("--- Created Chrome driver ---  ") 
-=======
-# (In order to run within Jenkins Envrionment)
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--disable-gpu")
-options.add_argument('--headless')
-options.add_experimental_option('excludeSwitches', ['enable-logging']) # This IGNORES unfixable chrome web driver logs
-driver = Chrome(service=Service(ChromeDriverManager().install()), options=options) #Firefox: "Firefox" | Edge: "options = EdgeOptions(); options.use_chromium = True; driver = Edge(options=options)"
->>>>>>> e37370e ([STM-88] Minor bug to previous commit. SQUASH BUG)
+logger.debug("--- Created Chrome driver ---  ")
 
 driver.implicitly_wait(20) # Better Practice to use this than time.sleep() (Unlike 'time.sleep()', 'driver.implicitly_wait()' is NOT a FIXED wait time) [Gives more time to load webpage to find elements]
 
@@ -279,7 +265,6 @@ driver.implicitly_wait(10) # To allow enough load time for webpage
 pswd = driver.find_element("xpath", '//input[@type="password"]')
 pswd.send_keys(os.environ.get("TWITTER_PSWD"))
 pswd.send_keys(Keys.RETURN)
-<<<<<<< HEAD
 
 #-- (SECOND) If unusal activity confirmation page appears (User Confirmation via EMAIL confirmation code sent!)
 try:
@@ -305,26 +290,6 @@ for query in search_query_list():
     #-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
     driver.find_element("xpath", "//span[text()='Latest']").click()
 
-=======
-
-#-- Iterate through all custom search queries set
-for query in search_query_list():
-    driver.implicitly_wait(10) # To allow enough load time for webpage
-
-    #-- Find search box --
-    searchInput = driver.find_element("xpath", '//input[@data-testid="SearchBox_Search_Input"]')
-
-    # (For future iterations): Clear search input box to ensure on next iteration its cleared
-    searchInput.send_keys(Keys.BACKSPACE * len(searchInput.get_attribute('value'))) # Slowest solution but only one that works!? (Using Backspaces to clear)
-    
-    #-- Search the keyword
-    searchInput.send_keys(query)
-    searchInput.send_keys(Keys.RETURN) 
-
-    #-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
-    driver.find_element("xpath", "//span[text()='Latest']").click()
-
->>>>>>> 29f1857 ([STM-86] Twitter Customm Search Query List Finalized; Refactored some code for better usability/scalability; Cleaned up more organization of structure to follow similar convention as Reddit)
     try:
         payloadCollected = [] # Finalized extracted & collected tweet cards to be stored used in COLLECTION process (NOTE: Initalized here to still be able to store data if failure occurs)
 

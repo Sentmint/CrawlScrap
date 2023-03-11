@@ -88,9 +88,6 @@ If ran too many times consecutively, will suspect suspicious activity that goes 
      - Comment out ``--headless`` flag code command execution line in file
 
 
-        UPON DEBUGGING
-     - Comment out ``--headless`` flag code command execution line in file
-
 </details>
 
 
