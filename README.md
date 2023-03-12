@@ -38,6 +38,9 @@ User Tweet Cards Content Scraper on Twitter
 3. Enter the directory containing the selenium_twitter_scraper.py file: ``..\CrawlScrape\twitter`` 
 4. Application will start running once the command ``python selenium_twitter_scraper.py`` is entered
 
+# [!!! CAUTION NOTE !!!]
+If ran too many times consecutively, will suspect suspicious activity that goes past TWITTER_USER_CONFIRMATION (which is already handled) and will send email confirmation code instead. (Not handled)
+
 ### Tools and Technologies Used
     - Python
     - Selenium
@@ -59,7 +62,6 @@ User Tweet Cards Content Scraper on Twitter
     |               |           |
 
 ### Notes
-
     In General, SETUP Section:
     
  - Runs on Chrome web browser driver
@@ -80,6 +82,10 @@ User Tweet Cards Content Scraper on Twitter
 
  - Format: `` ../twitter/<custom search query inputted>/<UTC time stamp at which data was collected> ``
  - Currently written to CSV and Binary file formats
+
+        UPON DEBUGGING
+ - Comment out ``--headless`` flag code command execution line in file
+
 
 </details>
 
