@@ -268,8 +268,12 @@ pswd.send_keys(Keys.RETURN)
 
 #-- (SECOND) If unusal activity confirmation page appears (User Confirmation via EMAIL confirmation code sent!)
 try:
-    driver.find_element("xpath", '//input[@data-testid="ocfEnterTextTextInput"]') # User Confirmation Code screen/alert appears
-    logger.warn("Oopsie! Ran Twitter Scraper consecutively too many times: Requires user confirmation code sent to email or else account temporarily blocked (NOT HANDLED in Code)")
+    userConfirmationCode = driver.find_element("xpath", '//input[@data-testid="ocfEnterTextTextInput"]') # User Confirmation Code screen/alert appears
+    logger.warning("Oopsie! Ran Twitter Scraper consecutively too many times: Requires user confirmation code sent to email or else account temporarily blocked (NOT HANDLED in Code)")
+    print("Type the Email Verification Code: ")
+    emailCode = input()
+    userConfirmationCode.send_keys(emailCode)
+    userConfirmationCode.send_keys(Keys.RETURN)
 except NoSuchElementException:
     logger.info("No Extra User Confirmation Code Needed (EMAIL confirmation code)")
 
@@ -287,8 +291,12 @@ for query in search_query_list():
     searchInput.send_keys(query)
     searchInput.send_keys(Keys.RETURN) 
 
+    logger.info(" --- Search Box Inputted Custom Query: [%s] ---", query)
+
     #-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
     driver.find_element("xpath", "//span[text()='Latest']").click()
+    
+    logger.info(" --- Within Latest Tab ---")
 
     try:
         payloadCollected = [] # Finalized extracted & collected tweet cards to be stored used in COLLECTION process (NOTE: Initalized here to still be able to store data if failure occurs)
