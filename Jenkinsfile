@@ -25,7 +25,7 @@ pipeline {
                 //Running a loop of Twitter scraper
                 dir("twitter"){
                     echo "Test case for Twitter Scraper being run"
-                    sh "python3 selenium_twitter_scraper.py"
+                    sh "python3 test_selenium_twitter_scraper.py"
                 }
             }
         }
