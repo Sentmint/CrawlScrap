@@ -272,7 +272,7 @@ try:
     logger.warning("Oopsie! Ran Twitter Scraper consecutively too many times: Requires user confirmation code sent to email or else account temporarily blocked (NOT HANDLED in Code)")
     print("Type the Email Verification Code: ")
     emailCode = input()
-    userConfirmationCode.send_keys(emailCode)
+    userConfirmationCode.send_keys(emailCode) #TODO: console input for email user confirmation code (if needed)
     userConfirmationCode.send_keys(Keys.RETURN)
 except NoSuchElementException:
     logger.info("No Extra User Confirmation Code Needed (EMAIL confirmation code)")

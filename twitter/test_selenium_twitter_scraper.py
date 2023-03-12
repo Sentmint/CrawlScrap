@@ -1,6 +1,7 @@
 """ Twitter Cards Scraper Python using Selenium
 NOTE:
 - <<< TESTING FILE ONLY >>>
+- View TODO comments is where changes are made for TESTING purposes only
 """
 
 import time, requests, logging, csv, pickle, os
@@ -194,6 +195,7 @@ def store_tweet_data_payload(searchQuery, dataPayload):
 
     logger.info("<< STORED Tweets Payload >>")
 
+    # TODO: Removes created file to save space
     os.remove(csvFile)
     os.remove(binaryFile)
 
@@ -263,7 +265,7 @@ try:
     logger.warning("Oopsie! Ran Twitter Scraper consecutively too many times: Requires user confirmation code sent to email or else account temporarily blocked (NOT HANDLED in Code)")
     print("Type the Email Verification Code: ")
     # emailCode = input()
-    userConfirmationCode.send_keys("4g3px24c")
+    userConfirmationCode.send_keys("4g3px24c")  #TODO (Check email for Twitter user confirmation code and hard code here)
     userConfirmationCode.send_keys(Keys.RETURN)
 except NoSuchElementException:
     logger.info("No Extra User Confirmation Code Needed (EMAIL confirmation code)")
@@ -284,7 +286,7 @@ for query in search_query_list():
 
     logger.info(" --- Search Box Inputted Custom Query: [%s] ---", query)
 
-    #-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
+    #-- Pull historical data -- ## TAB Viewing Options: Select which TAB option to view?
     driver.find_element("xpath", "//span[text()='Latest']").click()
     
     logger.info(" --- Within Latest Tab ---")
@@ -302,7 +304,7 @@ for query in search_query_list():
     store_tweet_data_payload(query, payloadCollected)
     logger.info("--- %s Minutes for search query [ %s ] ---" % ( ((time.time() - startTime) / 60) , query))  # Reference for time keeping sake 
 
-    break
+    break # TODO: Only run 1 custom search query
 
 #-- CLOSE browser to save resources (Good practice)
 # driver.close() # Closes focused opened browser window
