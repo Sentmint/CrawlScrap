@@ -271,8 +271,8 @@ try:
     userConfirmationCode = driver.find_element("xpath", '//input[@data-testid="ocfEnterTextTextInput"]') # User Confirmation Code screen/alert appears
     logger.warning("Oopsie! Ran Twitter Scraper consecutively too many times: Requires user confirmation code sent to email or else account temporarily blocked (NOT HANDLED in Code)")
     print("Type the Email Verification Code: ")
-    emailCode = input()
-    userConfirmationCode.send_keys(emailCode)
+    # emailCode = input()
+    userConfirmationCode.send_keys("4g3px24c")
     userConfirmationCode.send_keys(Keys.RETURN)
 except NoSuchElementException:
     logger.info("No Extra User Confirmation Code Needed (EMAIL confirmation code)")
