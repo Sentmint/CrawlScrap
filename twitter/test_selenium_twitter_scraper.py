@@ -1,20 +1,7 @@
 """ Twitter Cards Scraper Python using Selenium
-TODO NOTE: OPTIONAL Addons below
-- Discuss additional addon options to main functionality:
-    - Re-write this program but using Twitter API (IGNORED due to recent news that Twitter API no longer free: Feb 2023)
-    - Failed connection data storage: Maybe give user OPTION on how to store data upon connection failure (Overwrite? Store separately?) [Currently: Overwrites data collected file up to point of failure]
-    - Setup other web browsers and give user OPTION to choose? [Currently: Chrome]
-    - More efficient performance/runtime (Ex: Clearing search box)
-(NAVIGATION)
- - Setup which TAB to select and view  [Currently: 'Latest' Tab)
-(COLLECTION)
- - DOESNT support certain elements: (Needed or useful to collect and store?)
-    - 'tweetTextAddon' = Person referencing tweet below
-    - Images/gifs/videos/media text 
-    - Look into ignoring all media tags to improve runtime?
- - Edge/Outlier case may exist where user posts content that the webpage css does not exist so crash application?
+NOTE:
+- <<< TESTING FILE ONLY >>>
 """
-
 
 import time, requests, logging, csv, pickle, os
 from search_query import search_query_list
@@ -89,31 +76,31 @@ def scroll_to_bottom():
             scrollCount += 1
             logger.debug("-- Scroll Count: " + str(scrollCount) + " --")
 
-            #-- Condition to EXIT loop (1. MATCHING Y scroll pos   OR   2. Scroll counter limit)
-            ######## START ########
-            ## <<  1. >>> Have we reached bottom of the page/Is there no more new tweets to load?
-            # Get NEW scroll height once scrolled
-            newScrollHeightPos = driver.execute_script("return Math.max( \
-                document.body.scrollHeight, document.body.offsetHeight, \
-                document.documentElement.clientHeight, \
-                document.documentElement.scrollHeight, \
-                document.documentElement.offsetHeight );")
+            # #-- Condition to EXIT loop (1. MATCHING Y scroll pos   OR   2. Scroll counter limit)
+            # ######## START ########
+            # ## <<  1. >>> Have we reached bottom of the page/Is there no more new tweets to load?
+            # # Get NEW scroll height once scrolled
+            # newScrollHeightPos = driver.execute_script("return Math.max( \
+            #     document.body.scrollHeight, document.body.offsetHeight, \
+            #     document.documentElement.clientHeight, \
+            #     document.documentElement.scrollHeight, \
+            #     document.documentElement.offsetHeight );")
 
-            # Bottom of the page reached if CURRENT Y scroll height pos MATCHES with NEW Y scroll height pos (No more scrolling/change in Y scroll height pos)
-            if newScrollHeightPos == currentScrollHeightPos: 
-                logger.info("-- [All Tweets on Page LOADED in] --")            
-                break
-            currentScrollHeightPos = newScrollHeightPos # Otherwise update the last scroll height (currentScrollHeightPos) with newly scrolled Y position
-            ####### END #########
+            # # Bottom of the page reached if CURRENT Y scroll height pos MATCHES with NEW Y scroll height pos (No more scrolling/change in Y scroll height pos)
+            # if newScrollHeightPos == currentScrollHeightPos: 
+            #     logger.info("-- [All Tweets on Page LOADED in] --")            
+            #     break
+            # currentScrollHeightPos = newScrollHeightPos # Otherwise update the last scroll height (currentScrollHeightPos) with newly scrolled Y position
+            # ####### END #########
 
             #-- [OR] --
 
-            # ####### START ########
-            # ## <<  2. >>>
-            # # Mainly just for TESTING with sample size (Change # to set scroll limit)
-            # testWithSampleSize = 3
-            # if scrollCount == testWithSampleSize: break
-            # ###### END #########
+            ####### START ########
+            ## <<  2. >>>
+            # Mainly just for TESTING with sample size (Change # to set scroll limit)
+            testWithSampleSize = 3
+            if scrollCount == testWithSampleSize: break
+            ###### END #########
 
         else: # Invalid connection status
             break 
@@ -207,6 +194,10 @@ def store_tweet_data_payload(searchQuery, dataPayload):
 
     logger.info("<< STORED Tweets Payload >>")
 
+    os.remove(csvFile)
+    os.remove(binaryFile)
+
+    logger.info("<< DELETED Tweets Payload (TEST FILE) >>")
 
 # --------------------------------------------------------------- (DIVIDER) ----------------------------------------------------------------
     
@@ -223,7 +214,7 @@ options = ChromeOptions()
 options.add_argument("--no-sandbox") # Bypass OS security model (Has to be first option) 
 options.add_argument("--disable-dev-shm-usage") # overcome limited resource problems
 options.add_argument(f'user-agent={user_agent}') # Needed for headless mode
-# options.add_argument('--headless') # Runs Chrome Driver without actual browser [NOTE: Comment out to debug WITH browser]
+options.add_argument('--headless') # Runs Chrome Driver without actual browser [NOTE: Comment out to debug WITH browser]
 # (IF needed JIC for headless mode not working)
 # options.add_argument("--disable-gpu") # [Unnecesary if have --headless flag] Applicable to windows os only 
 # options.add_argument('--ignore-certificate-errors') #Fix possible invalid SSL certificate
@@ -271,8 +262,8 @@ try:
     userConfirmationCode = driver.find_element("xpath", '//input[@data-testid="ocfEnterTextTextInput"]') # User Confirmation Code screen/alert appears
     logger.warning("Oopsie! Ran Twitter Scraper consecutively too many times: Requires user confirmation code sent to email or else account temporarily blocked (NOT HANDLED in Code)")
     print("Type the Email Verification Code: ")
-    emailCode = input()
-    userConfirmationCode.send_keys(emailCode)
+    # emailCode = input()
+    userConfirmationCode.send_keys("4g3px24c")
     userConfirmationCode.send_keys(Keys.RETURN)
 except NoSuchElementException:
     logger.info("No Extra User Confirmation Code Needed (EMAIL confirmation code)")
@@ -310,6 +301,8 @@ for query in search_query_list():
     #-- STORE Data Collected
     store_tweet_data_payload(query, payloadCollected)
     logger.info("--- %s Minutes for search query [ %s ] ---" % ( ((time.time() - startTime) / 60) , query))  # Reference for time keeping sake 
+
+    break
 
 #-- CLOSE browser to save resources (Good practice)
 # driver.close() # Closes focused opened browser window
