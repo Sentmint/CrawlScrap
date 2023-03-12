@@ -15,7 +15,6 @@ TODO NOTE: OPTIONAL Addons below
  - Edge/Outlier case may exist where user posts content that the webpage css does not exist so crash application?
 """
 
-
 import time, requests, logging, csv, pickle, os
 from search_query import search_query_list
 from dotenv import load_dotenv #For envrionment variables
@@ -24,6 +23,7 @@ from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.service import Service  
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 
 

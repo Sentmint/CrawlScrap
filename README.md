@@ -83,9 +83,8 @@ If ran too many times consecutively, will suspect suspicious activity that goes 
  - Format: `` ../twitter/<custom search query inputted>/<UTC time stamp at which data was collected> ``
  - Currently written to CSV and Binary file formats
 
-
         UPON DEBUGGING
-     - Comment out ``--headless`` flag code command execution line in file
+ - Comment out ``--headless`` flag code command execution line in file
 
 
 </details>
