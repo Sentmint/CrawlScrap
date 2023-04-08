@@ -111,12 +111,8 @@ The credentials for the PRAW connection are fetched from an env file that has to
 
 ## Setup & Running 
 
-### Version requirements
-``python --version`` <br>
-``Python 3.10.10`` <br> <br>
-``pip show praw`` <br>
-``Name: praw`` <br>
-``Version: 7.6.1`` <br>
+### Pip requirements
+Can be found in `requirements.txt` and installed via `pip install -r requirements.txt` command
 
 ### Setting up desired subreddits to be scanned
 The reddit scraper will evaluate a given array of subreddit strings defined in ``..\CrawlScrape\reddit\reddit_resource\subreddits.py`` which can be found [here](reddit/reddit_resource/subreddits.py)
