@@ -88,7 +88,7 @@ def create_submission_json(submissions: list, subreddit):
     with open(os.path.join(path, file), "w") as f:
         json.dump(submissions, f)
 
-    if cli_arguments != []:
+    if cli_arguments:
         # TODO: Has to be modified for "STM-114:dynamic output directories" later on
         with open("../data_collected/reddit/" + subreddit + "/" + file) as f:
             data = json.load(f)
