@@ -15,16 +15,19 @@ TODO NOTE: OPTIONAL Addons below
  - Edge/Outlier case may exist where user posts content that the webpage css does not exist so crash application?
 """
 
-import time, requests, logging, csv, pickle, os
+import time, requests, logging, csv, pickle, os, sys
 from search_query import search_query_list
 from dotenv import load_dotenv #For envrionment variables
 from selenium.webdriver import Chrome #Firefox Browser: "Firefox" | Edge Browser: "from msedge.selenium_tools import Edge, EdgeOptions"
-from selenium.webdriver import ChromeOptions 
-from selenium.webdriver.chrome.service import Service  
+from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
+script_dir = os.path.dirname(os.path.abspath(__file__))
+crawl_scrape_dir = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(crawl_scrape_dir)
+from stock.stock_search import find_stock
 
 
 ####################### FUNCTIONS ##########################
@@ -58,7 +61,7 @@ def valid_connection_status():
         logger.debug("<< Connection to Webpage FAILED/LOST >> \n \
             Function 'valid_connection_status' failed exception: << " + str(eMsg) + " >>")
         return False
-    
+
 
 def scroll_to_bottom():
     """ Function handles infinite scrolling; scrolls bottom of page until no more tweets are loaded (or scroll counter limit condition satisfied) using Selenium
@@ -67,16 +70,16 @@ def scroll_to_bottom():
         - Includes EXTRACT and COLLECT of tweet cards shown on page (Function)
         If bottom of page reached/condition satisifed, BREAKS out of while loop and function; ELSE continously scrolls/loops
     """
-    tweetIdList = set() # Handle omitting duplicates during collection of tweet cards 
+    tweetIdList = set() # Handle omitting duplicates during collection of tweet cards
     scrollCount = 0 # For TESTING with sample size purposes
-    
+
     # Get CURRENT scroll height
     currentScrollHeightPos = driver.execute_script("return Math.max( \
         document.body.scrollHeight, document.body.offsetHeight, \
         document.documentElement.clientHeight, \
         document.documentElement.scrollHeight, \
         document.documentElement.offsetHeight );")
-    
+
     while True:
         #-- Function: Check connection status before interacting with webpage
         if valid_connection_status():
@@ -100,8 +103,8 @@ def scroll_to_bottom():
                 document.documentElement.offsetHeight );")
 
             # Bottom of the page reached if CURRENT Y scroll height pos MATCHES with NEW Y scroll height pos (No more scrolling/change in Y scroll height pos)
-            if newScrollHeightPos == currentScrollHeightPos: 
-                logger.info("-- [All Tweets on Page LOADED in] --")            
+            if newScrollHeightPos == currentScrollHeightPos:
+                logger.info("-- [All Tweets on Page LOADED in] --")
                 break
             currentScrollHeightPos = newScrollHeightPos # Otherwise update the last scroll height (currentScrollHeightPos) with newly scrolled Y position
             ####### END #########
@@ -116,7 +119,7 @@ def scroll_to_bottom():
             # ###### END #########
 
         else: # Invalid connection status
-            break 
+            break
 
 
 def extract_tweet_data_payload(tweet):
@@ -130,7 +133,7 @@ def extract_tweet_data_payload(tweet):
     username = tweet.find_element("xpath", './/span').text # Get Username  (Elements identified earlier are removed from DOM due to page refresh)
     twitterHandle = tweet.find_element("xpath", './/span[contains(text(), "@")]').text # Get Twitter Handle
     try:
-        datePosted = tweet.find_element("xpath", './/time').get_attribute('datetime') # Get Timestamp string 
+        datePosted = tweet.find_element("xpath", './/time').get_attribute('datetime') # Get Timestamp string
     except NoSuchElementException as eMsg:
         logger.info("Tweet Card Content Exception: << " + str(eMsg) + " >> \n \t [It was likely not a user! Filtered Out and Omitted tweet]") # If no date found, NOT a user (Ex: Ad/sponsor)
         return
@@ -161,7 +164,7 @@ def collect_tweet_data_payload(tweetIdList):
     driver.implicitly_wait(10) # To allow enough load time for webpage
     tweetCardList = driver.find_elements("xpath", '//article[@data-testid="tweet"]') # Get entire Tweet Card Payload element
     for tweet in tweetCardList: #Commented out "[-15:]" range on list which views LAST 15 items (Supposedly removes need to recheck every tweet in list & reduces duplicates) [Unsure if useful with this implementation anymore]
-        data = extract_tweet_data_payload(tweet) #-- Function: extracts info from EACH Tweet Card using Selenium 
+        data = extract_tweet_data_payload(tweet) #-- Function: extracts info from EACH Tweet Card using Selenium
         if data: # If tweet card content extracted is NOT null
             #-- Check for duplicates collected (Make our OWN tweet ID)
             tweetId = ''.join(data) # Create UNIQUE ID by concat elements of tweet into 1 string
@@ -187,7 +190,7 @@ def store_tweet_data_payload(searchQuery, dataPayload):
 
     directoryPath = '../data_collected/twitter/' + searchQuery + "/"
     createdfileName = str(time.time())
-    
+
     #-- TO CSV Format
     csvFile = os.path.join(directoryPath, createdfileName + ".csv")
     with open(csvFile, 'w', newline='', encoding='utf-8') as fileCSV: # Writing to file
@@ -208,22 +211,22 @@ def store_tweet_data_payload(searchQuery, dataPayload):
     logger.info("<< STORED Tweets Payload >>")
 
 
-# --------------------------------------------------------------- (DIVIDER) ----------------------------------------------------------------
-    
+# ----------------------------------------------------- (DIVIDER) -----------------------------------------------------
+
 
 ####################### LOGIC ##########################
 startTime = time.time() # Time Keeper
 logger = setup_logger() # Logging Messages
 load_dotenv() # Load environment variables from .env file
 
-#-- Create Instance of Webdriver 
+#-- Create Instance of Webdriver
 user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36' #'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
 options = ChromeOptions()
 # (In order to run CI agent account on Ubuntu server (within Jenkins Build Environment)
-options.add_argument("--no-sandbox") # Bypass OS security model (Has to be first option) 
+options.add_argument("--no-sandbox") # Bypass OS security model (Has to be first option)
 options.add_argument("--disable-dev-shm-usage") # overcome limited resource problems
 options.add_argument(f'user-agent={user_agent}') # Needed for headless mode
-# options.add_argument('--headless') # Runs Chrome Driver without actual browser [NOTE: Comment out to debug WITH browser]
+options.add_argument('--headless') # Runs Chrome Driver without actual browser [NOTE: Comment out to debug WITH browser]
 # (IF needed JIC for headless mode not working)
 # options.add_argument("--disable-gpu") # [Unnecesary if have --headless flag] Applicable to windows os only 
 # options.add_argument('--ignore-certificate-errors') #Fix possible invalid SSL certificate
@@ -268,48 +271,55 @@ pswd.send_keys(Keys.RETURN)
 
 #-- (SECOND) If unusal activity confirmation page appears (User Confirmation via EMAIL confirmation code sent!)
 try:
-    userConfirmationCode = driver.find_element("xpath", '//input[@data-testid="ocfEnterTextTextInput"]') # User Confirmation Code screen/alert appears
-    logger.warning("Oopsie! Ran Twitter Scraper consecutively too many times: Requires user confirmation code sent to email or else account temporarily blocked (NOT HANDLED in Code)")
-    print("Type the Email Verification Code: ")
-    emailCode = input()
-    userConfirmationCode.send_keys(emailCode) #TODO: console input for email user confirmation code (if needed)
-    userConfirmationCode.send_keys(Keys.RETURN)
+    driver.find_element("xpath", '//input[@data-testid="ocfEnterTextTextInput"]') # User Confirmation Code screen/alert appears
+    logger.warn("Oopsie! Ran Twitter Scraper consecutively too many times: Requires user confirmation code sent to email or else account temporarily blocked (NOT HANDLED in Code)")
 except NoSuchElementException:
     logger.info("No Extra User Confirmation Code Needed (EMAIL confirmation code)")
+
+#-- Check whether any arguments were provided. If they were, call stock_search.py and use the found tickers.
+chosen_search = {}
+if not sys.argv[1:]:
+    try:
+        chosen_search = find_stock(sys.argv[1:])
+    except Exception as eMsg:
+        logger.info("Error while running stock_search function find_stock using cli arguments" + str(eMsg))
+
+if not chosen_search:
+    chosen_search = search_query_list()
+else:
+    chosen_search = list(chosen_search.keys())
+
+
 
 #-- Iterate through all custom search queries set
 for query in search_query_list():
     driver.implicitly_wait(20) # To allow enough load time for webpage
-    
+
     #-- Find search box --
     searchInput = driver.find_element("xpath", '//input[@data-testid="SearchBox_Search_Input"]')
 
     # (For future iterations): Clear search input box to ensure on next iteration its cleared
     searchInput.send_keys(Keys.BACKSPACE * len(searchInput.get_attribute('value'))) # Slowest solution but only one that works!? (Using Backspaces to clear)
-    
+
     #-- Search the keyword
     searchInput.send_keys(query)
-    searchInput.send_keys(Keys.RETURN) 
-
-    logger.info(" --- Search Box Inputted Custom Query: [%s] ---", query)
+    searchInput.send_keys(Keys.RETURN)
 
     #-- Pull historical data -- ## TAB Viewing Options TODO: Select which TAB option to view?
     driver.find_element("xpath", "//span[text()='Latest']").click()
-    
-    logger.info(" --- Within Latest Tab ---")
 
     try:
         payloadCollected = [] # Finalized extracted & collected tweet cards to be stored used in COLLECTION process (NOTE: Initalized here to still be able to store data if failure occurs)
 
         #-- Scroll to get entire PAGE of Tweets (Either bottom of the page or set limit condition reached) --
         scroll_to_bottom()
-        
+
     except Exception as eMsg: # Possible Edge case: Element reference lost from DOM due to dynamic loading of page (".click()" or ".text" ref on element may get lost if load too fast)
-        logger.debug("Function 'scroll_to_bottom' while loop exception occurred: << " + str(eMsg) + " >>") 
+        logger.debug("Function 'scroll_to_bottom' while loop exception occurred: << " + str(eMsg) + " >>")
 
     #-- STORE Data Collected
     store_tweet_data_payload(query, payloadCollected)
-    logger.info("--- %s Minutes for search query [ %s ] ---" % ( ((time.time() - startTime) / 60) , query))  # Reference for time keeping sake 
+    logger.info("--- %s Minutes for search query [ %s ] ---" % ( ((time.time() - startTime) / 60) , query))  # Reference for time keeping sake
 
 #-- CLOSE browser to save resources (Good practice)
 # driver.close() # Closes focused opened browser window
