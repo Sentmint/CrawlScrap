@@ -140,6 +140,14 @@ def extract_tweet_data_payload(tweet):
 
     # Get Tweet DATA Content paylod (TEXT + addons)
     tweetText = tweet.find_element("xpath", './/div[@data-testid="tweetText"]').text  # Tweet itself
+    if args_provided:
+        norm_tweet = tweetText.lower()
+        #TODO: Study domain of this. A lot of posts have $TICKER, especially the TSX ones. Fix for later when querying of TSX is fixed.
+        if not (query.lower() in norm_tweet or ("#"+query.lower() in norm_tweet) or chosen_search[query].lower() in norm_tweet):
+            logger.info("Tweet does not contain text relating to the searched stock. It will be skipped.")
+            return None
+
+
     # tweetTextAddon = tweet.find_element("xpath", '//div[@class="css-1dbjc4n r-1ssbvtb r-1s2bzr4"]')  # Tweet person is referring to (Image, Reply, Article, Link, etc.)
     # textContent = tweetText + " \t " + tweetTextAddon
 
@@ -184,6 +192,9 @@ def store_tweet_data_payload(searchQuery, dataPayload):
     # print(os.getcwd()) # Show current dirc (Test)
     # print(os.listdir("../")) # Show files (Test)
 
+    #-- Check for invalid character in directory. Currently this is only ":" for the case of :TSX
+    searchQuery = searchQuery.replace(":", "_")
+
     #-- Create dir path if not already exist
     if not os.path.exists('../data_collected/twitter/' + searchQuery + "/"):
         os.makedirs('../data_collected/twitter/' + searchQuery + "/")
@@ -227,6 +238,11 @@ options.add_argument("--no-sandbox") # Bypass OS security model (Has to be first
 options.add_argument("--disable-dev-shm-usage") # overcome limited resource problems
 options.add_argument(f'user-agent={user_agent}') # Needed for headless mode
 options.add_argument('--headless') # Runs Chrome Driver without actual browser [NOTE: Comment out to debug WITH browser]
+
+# These arguments fix the error of headless not launching fast enough, resulting in the "cannot find element" error.
+options.add_argument("--proxy-server='direct://'")
+options.add_argument("--proxy-bypass-list=*")
+
 # (IF needed JIC for headless mode not working)
 # options.add_argument("--disable-gpu") # [Unnecesary if have --headless flag] Applicable to windows os only 
 # options.add_argument('--ignore-certificate-errors') #Fix possible invalid SSL certificate
@@ -244,7 +260,8 @@ options.add_experimental_option('excludeSwitches', ['enable-logging']) # This IG
 driver = Chrome(service=Service(ChromeDriverManager().install()), options=options) #Firefox: "Firefox" | Edge: "options = EdgeOptions(); options.use_chromium = True; driver = Edge(options=options)"
 logger.debug("--- Created Chrome driver ---  ")
 
-driver.implicitly_wait(20) # Better Practice to use this than time.sleep() (Unlike 'time.sleep()', 'driver.implicitly_wait()' is NOT a FIXED wait time) [Gives more time to load webpage to find elements]
+#Used to be implicit wait of 20. Wasn't long enough for my computer and would crash.
+driver.implicitly_wait(5) # Better Practice to use this than time.sleep() (Unlike 'time.sleep()', 'driver.implicitly_wait()' is NOT a FIXED wait time) [Gives more time to load webpage to find elements]
 
 #-- Go to first landing page [TRAVERSING Thru Twitter]
 driver.get("https://www.twitter.com/login")
@@ -277,22 +294,28 @@ except NoSuchElementException:
     logger.info("No Extra User Confirmation Code Needed (EMAIL confirmation code)")
 
 #-- Check whether any arguments were provided. If they were, call stock_search.py and use the found tickers.
+args_provided = False
 chosen_search = {}
-if not sys.argv[1:]:
+
+if sys.argv[1:]:
     try:
         chosen_search = find_stock(sys.argv[1:])
     except Exception as eMsg:
         logger.info("Error while running stock_search function find_stock using cli arguments" + str(eMsg))
 
 if not chosen_search:
-    chosen_search = search_query_list()
+    chosen_search_symbols = search_query_list()
 else:
-    chosen_search = list(chosen_search.keys())
+    chosen_search_symbols = list(chosen_search.keys())
+    args_provided = True
 
 
-
+#TODO: Scraper cannot collect :TSX stock posts. Figure out later and fix. scroll_to_bottom causes it.
 #-- Iterate through all custom search queries set
-for query in search_query_list():
+for query in chosen_search_symbols:
+    if "#" not in query:
+        query = "#"+query
+    logger.info(query)
     driver.implicitly_wait(20) # To allow enough load time for webpage
 
     #-- Find search box --
