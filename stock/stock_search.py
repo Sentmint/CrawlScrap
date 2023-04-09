@@ -1,11 +1,12 @@
 import glob
 import os
+import sys
 import pandas as pd
 
 
 def find_stock(args: list[str]):
     found_stock = {}
-    stock_dict = read_csv("data\\")
+    stock_dict = read_csv()
     args = [arg.lower() for arg in args]
 
     # Currently set up to only return the first match with the given cli arg.
@@ -35,10 +36,14 @@ def find_stock(args: list[str]):
                     print(found_stock)
                     break
 
+    return found_stock
 
-def read_csv(path: str):
+
+def read_csv():
     stock_dict = []
-    csv_files = glob.glob(os.path.join(path, "*.csv"))
+    base_directory = os.path.dirname(os.path.abspath(__file__))
+    data_directory = os.path.join(base_directory, "data")
+    csv_files = glob.glob(os.path.join(data_directory, "*.csv"))
 
     for file in csv_files:
         df = pd.read_csv(file)
@@ -46,4 +51,4 @@ def read_csv(path: str):
 
     return stock_dict
 
-# find_stock(sys.argv[1:])
+#find_stock(sys.argv[1:])
