@@ -1,6 +1,5 @@
 import glob
 import os
-
 import pandas as pd
 
 
@@ -9,6 +8,9 @@ def find_stock(args: list[str]):
     stock_dict = read_csv("data\\")
     args = [arg.lower() for arg in args]
 
+    # Currently set up to only return the first match with the given cli arg.
+    # Gets a bit out of hand otherwise given that we are using the found results as the search
+    # parameter for the Twitter scraper, so # of args will always be # of searches done with Twitter scraper.
     for market in stock_dict:
         # Added so second for loop block doesn't check for argument if it was already found in Symbols
         # TODO: If we don't want to return multiple stocks from across markets,
@@ -33,8 +35,6 @@ def find_stock(args: list[str]):
                     print(found_stock)
                     break
 
-    return found_stock
-
 
 def read_csv(path: str):
     stock_dict = []
@@ -45,3 +45,5 @@ def read_csv(path: str):
         stock_dict.append(df.to_dict())
 
     return stock_dict
+
+# find_stock(sys.argv[1:])
