@@ -3,3 +3,5 @@ praw==7.7.0
 selenium==4.8.2
 webdriver_manager==3.8.5
 chromedriver==2.24.1
+pandas==2.0.0
+requests==2.28.2
