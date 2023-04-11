@@ -239,17 +239,13 @@ options.add_argument("--disable-dev-shm-usage") # overcome limited resource prob
 options.add_argument(f'user-agent={user_agent}') # Needed for headless mode
 options.add_argument('--headless') # Runs Chrome Driver without actual browser [NOTE: Comment out to debug WITH browser]
 
-# These arguments fix the error of headless not launching fast enough, resulting in the "cannot find element" error.
-options.add_argument("--proxy-server='direct://'")
-options.add_argument("--proxy-bypass-list=*")
-
 # (IF needed JIC for headless mode not working)
+options.add_argument("--proxy-server='direct://'") # Proxy arguments fix the error of headless not launching fast enough, resulting in the "cannot find element" error.
+options.add_argument("--proxy-bypass-list=*")
 # options.add_argument("--disable-gpu") # [Unnecesary if have --headless flag] Applicable to windows os only 
 # options.add_argument('--ignore-certificate-errors') #Fix possible invalid SSL certificate
 # options.add_argument('--allow-running-insecure-content') #Fix possible invalid SSL certificate
 # options.add_argument("--allow-insecure-localhost")
-# options.add_argument("--proxy-server='direct://'")
-# options.add_argument("--proxy-bypass-list=*")
 # options.add_argument('--user-data-dir=~/.config/google-chrome') # Supposed fix to permission issue with CI agent account on Ubuntu server
 options.add_argument("--disable-extensions") # disabling extensions
 options.add_argument("--disable-infobars") # disabling infobars (Info text sometimes given by browser)
