@@ -260,8 +260,7 @@ options.add_experimental_option('excludeSwitches', ['enable-logging']) # This IG
 driver = Chrome(service=Service(ChromeDriverManager().install()), options=options) #Firefox: "Firefox" | Edge: "options = EdgeOptions(); options.use_chromium = True; driver = Edge(options=options)"
 logger.debug("--- Created Chrome driver ---  ")
 
-#Used to be implicit wait of 20. Wasn't long enough for my computer and would crash.
-driver.implicitly_wait(5) # Better Practice to use this than time.sleep() (Unlike 'time.sleep()', 'driver.implicitly_wait()' is NOT a FIXED wait time) [Gives more time to load webpage to find elements]
+driver.implicitly_wait(20) # Better Practice to use this than time.sleep() (Unlike 'time.sleep()', 'driver.implicitly_wait()' is NOT a FIXED wait time) [Gives more time to load webpage to find elements]
 
 #-- Go to first landing page [TRAVERSING Thru Twitter]
 driver.get("https://www.twitter.com/login")
