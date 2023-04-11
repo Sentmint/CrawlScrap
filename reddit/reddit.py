@@ -115,15 +115,15 @@ def create_submission_json(submissions: list, subreddit):
                         filtered_submission['comments'] = relevant_comments
                         filtered_json.append(filtered_submission)
 
-            #TODO: As is, we will most likely have duplicate comments since a new sub-directory is being made for every
-            # cli arg. Could just do one output for all args, but then it would be difficult to tell which cli arg
-            # comment had a match for. Discuss with team later.
+                #TODO: As is, we will most likely have duplicate comments since a new sub-directory is being made for every
+                # cli arg. Could just do one output for all args, but then it would be difficult to tell which cli arg
+                # comment had a match for. Discuss with team later.
 
-            filter_path = "../data_collected/reddit/" + subreddit + "/" + key
-            Path(filter_path).mkdir(parents=True, exist_ok=True)
-            file = str(time.time()) + ".json"
-            with open(os.path.join(filter_path, file), "w") as filtered:
-                json.dump(filtered_json, filtered)
+                filter_path = "../data_collected/reddit/" + subreddit + "/" + key
+                Path(filter_path).mkdir(parents=True, exist_ok=True)
+                file = str(time.time()) + ".json"
+                with open(os.path.join(filter_path, file), "w") as filtered:
+                    json.dump(filtered_json, filtered)
 
 
 top_25_scanner()
