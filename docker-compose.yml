@@ -1,0 +1,8 @@
+services:
+  data-collectors:
+    image: registry.digitalocean.com/sentmint/data-collectors
+    build: .
+    volumes:
+      - data:./data_collected/
+    env_file:
+      - .env
