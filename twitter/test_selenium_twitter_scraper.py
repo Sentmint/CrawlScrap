@@ -4,7 +4,7 @@ NOTE:
 - View TODO comments is where changes are made for TESTING purposes only
 """
 
-import time, requests, logging, csv, pickle, os
+import time, requests, logging, csv, pickle, os, subprocess
 from search_query import search_query_list
 from dotenv import load_dotenv #For envrionment variables
 from selenium.webdriver import Chrome #Firefox Browser: "Firefox" | Edge Browser: "from msedge.selenium_tools import Edge, EdgeOptions"
@@ -159,6 +159,17 @@ def collect_tweet_data_payload(tweetIdList):
     logger.info("-- Extracted and Collected Tweets Payload --")
 
 
+def run_sync_script_rabbitmq(tuple_content):
+    ''' HELPER FUNCTION For sending info to RabbitMQ (Calling function from another repo: "Sync-Script")
+    Note: Call x2 Terminal
+        1. Receive
+        2. Send + others
+        - Subprocess = Access and reference functions from other repositories file contents from ANOTHER Github Repo within SAME Github Organization (Invoked as subprocess)
+    '''
+   # subprocess.run(['python', '../../Sync-Script/scrapers/receive.py'])
+    subprocess.run(['python', '../../Sync-Script/scrapers/send.py', tuple_content]) #['python', '../../Sync-Script/scrapers/send.py', tuple_content])    
+
+
 def store_tweet_data_payload(searchQuery, dataPayload):
     """ Function STORES list of Tweets payload extracted and collected in desired format using Selenium.
         Containing the Extracted & Collected tweet cards, write to a:
@@ -168,6 +179,9 @@ def store_tweet_data_payload(searchQuery, dataPayload):
     """
     # print(os.getcwd()) # Show current dirc (Test)
     # print(os.listdir("../")) # Show files (Test)
+
+    #-- Send collected Twitter data payload to RabbitMQ Queue
+    run_sync_script_rabbitmq((searchQuery, dataPayload))
 
     #-- Create dir path if not already exist
     if not os.path.exists('../data_collected/twitter/' + searchQuery + "/"):
@@ -231,7 +245,14 @@ options.add_argument("--window-size=1920,1080") # JIC if screen too small (Fix b
 options.add_argument("--start-maximized") # Double JIC: open Browser in maximized mode [Some elements only found on bigger screen resolution]
 
 options.add_experimental_option('excludeSwitches', ['enable-logging']) # This IGNORES unfixable chrome web driver logs
+# Create Chrome driver instance (Random bug so tried to fix/debug)
 driver = Chrome(service=Service(ChromeDriverManager().install()), options=options) #Firefox: "Firefox" | Edge: "options = EdgeOptions(); options.use_chromium = True; driver = Edge(options=options)"
+# driver = Chrome(executable_path=ChromeDriverManager().install())
+# try:
+#     driver = Chrome(service=Service(ChromeDriverManager().install()), options=options) #Firefox: "Firefox" | Edge: "options = EdgeOptions(); options.use_chromium = True; driver = Edge(options=options)"
+#     # driver = Chrome(service=(ChromeDriverManager(version='114.0.5735.90').install()))
+# except ValueError as e:
+#     raise ValueError(f"Error while initializing ChromeDriver: {e}")
 logger.debug("--- Created Chrome driver ---  ")
 
 driver.implicitly_wait(20) # Better Practice to use this than time.sleep() (Unlike 'time.sleep()', 'driver.implicitly_wait()' is NOT a FIXED wait time) [Gives more time to load webpage to find elements]
