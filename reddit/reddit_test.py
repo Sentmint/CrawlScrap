@@ -5,6 +5,7 @@ import logging
 import json
 import time
 import os
+from producer import publish_stock
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -49,6 +50,7 @@ def test_1_scan():
             "comment_count": submission.num_comments,
             "comments": comments
         })
+        publish_stock(top25Submissions)
         create_submission_json(top25Submissions, subreddit)
         break
 
