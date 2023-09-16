@@ -1,29 +1,21 @@
 {
-    "Subreddits": 
-    [
+  "Subreddits": 
+  [
+    {
+      "Name": "Apple",
+      "Filter": 
       {
-        "Name": "Apple",
-        "Filter": 
-        {
-          "Keyword": ["iPhone", "MacBook", "iPad"],
-          "StartTimeUTC": "2023-09-16T14:00:00Z"
-        }
-      },
-      {
-        "Name": "TeamFightTactics",
-        "Filter": 
-        {
-          "Keyword": ["Chibi", "Diamond"],
-          "StartTimeUTC": "2023-09-16T14:00:00Z"
-        }
-      },
-      {
-        "Name": "YuGiOh",
-        "Filter": 
-        {
-          "Keyword": ["GX", "Duel Links"],
-          "StartTimeUTC": "2023-09-16T14:00:00Z"
-        }
+        "Keyword": ["iPad"],
+        "StartTimeUTC": "2023-09-16T14:00:00Z"
       }
-    ]
+    },
+    {
+      "Name": "TeamFightTactics",
+      "Filter": 
+      {
+        "Keyword": ["Chibi", "Diamond"],
+        "StartTimeUTC": "2023-09-16T14:00:00Z"
+      }
+    }
+  ]
 }

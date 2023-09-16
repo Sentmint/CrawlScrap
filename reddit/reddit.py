@@ -4,45 +4,55 @@ import os
 import sys
 import time
 import re
-from pathlib import Path
 import praw.models
-from reddit_resource import subreddits as subs
+from datetime import datetime
+from pathlib import Path
+from reddit_resources import reddit_config as config
 from reddit_service import praw_service as p
-script_dir = os.path.dirname(os.path.abspath(__file__))
-crawl_scrape_dir = os.path.abspath(os.path.join(script_dir, '..'))
-sys.path.append(crawl_scrape_dir)
-from stock.stock_search import find_stock
+from reddit_service import logger as log
 
-logging.basicConfig(level=logging.DEBUG)
-
-cli_arguments = sys.argv[1:]
-
-def top_25_scanner():
+def subreddit_scanner():
     reddit = p.praw_connection()
-    for subreddit in subs.subreddit_list():
-        top25 = reddit.subreddit(subreddit).hot(limit=25)
-        top25Submissions = []
-        for submission in top25:
+    reddit_config = config.getConfig()
+    log.formatter()
+    for config_data in reddit_config["Subreddits"]:
+        subreddit = config_data["Name"]
+        if not subreddit:
+            continue
+
+        logging.info("Scanning subreddit: " + subreddit)
+        front_page_comments = []
+        try:
+            front_page = reddit.subreddit(subreddit).hot(limit=25)
+            logging.info("Successfully collected the front page submissions of " + subreddit)
+        except:
+            logging.error("Error encountered when collecting the front page submissions on the subreddit: " + subreddit)
+            continue
+        
+        for submission in front_page:
+            # For now we're skipping mod-related posts since they're not relevant to our project
             if submission.stickied:
                 continue
+            logging.info("Scanning submission: " + submission.title)
             comments = []
-            curr = reddit.submission(submission)  # Grabs the front page ids to be scanned for comments
-            curr.comments.replace_more(limit=None, threshold=0)  # Fetch all comments and their children
-            for comment in curr.comments.list():  # Creates a list of all comments to eliminate hierarchy
+
+            # Potentially change the limiter here until reddit fixes their api limitation logic
+            try:
+                 # Fetch all comments and their children
+                submission.comments.replace_more(limit=None, threshold=0) 
+                logging.info("Successfully collected " + str(len(submission.comments.list())) + " comments")
+            except:
+                logging.error("API returned a non-ok response. Likely due to API Limit bug. Skipping submission: " + submission.title)
+                continue
+
+            # Creates a list of all comments to eliminate hierarchy
+            # Hierarchy can be inferred if it has a use-case (which comment belongs to which parent)
+            for comment in submission.comments.list():  
                 if not isinstance(comment, praw.models.Comment):
                     continue
+
                 comments.append({
                     "comment_author": comment.author_fullname if hasattr(comment, 'author_fullname') else "null",
-                    ### This was removed because it requires additional API calls
-                    ### Slows down the scraper as we only have 60 API calls available per minute.
-                    # Note: Shadowbanned redditors do not have any of these fields available.
-                    # "commentAuthor": [{
-                    #     "id": comment.author.id,
-                    #     "name": comment.author.name,
-                    #     "commentKarma": comment.author.comment_karma,
-                    #     "submissionKarma": comment.author.link_karma,
-                    #     "accountCreated": comment.author.created_utc
-                    #   } if comment.author is not None and not hasattr(comment.author, 'is_suspended') else "null"],
                     "body": comment.body,
                     "created_utc": comment.created_utc,
                     "edited": comment.edited,
@@ -53,7 +63,7 @@ def top_25_scanner():
                     "score": comment.score,
                     "ups": comment.ups
                 })
-            top25Submissions.append({
+            front_page_comments.append({
                 "id": submission.id,
                 "title": submission.title,
                 "flair": submission.link_flair_text,
@@ -67,63 +77,60 @@ def top_25_scanner():
                 "permalink": submission.permalink,
                 "shortlink": submission.shortlink,
                 "author": submission.author_fullname if hasattr(submission, 'author_fullname') else "null",
-                # "author": [{
-                #     "id": submission.author.id,
-                #     "name": submission.author.name,
-                #     "commentKarma": submission.author.comment_karma,
-                #     "submissionKarma": submission.author.link_karma,
-                #     "accountCreated": submission.author.created_utc,
-                #     } if submission.author is not None and not hasattr(submission.author, 'is_suspended') else "null"],
                 "comment_count": submission.num_comments,
                 "comments": comments
             })
-        create_submission_json(top25Submissions, subreddit)
+        
+        logging.info("Attempting to create JSON for scanned subreddit: " + subreddit)
+        if "Filter" in config_data: 
+            filtered_comments = filter_submission_json(front_page_comments, config_data["Filter"])
+            create_submission_json(filtered_comments, subreddit)
+        else:
+            create_submission_json(front_page_comments, subreddit)
+
+
+def filter_submission_json(submissions: list, filter: dict):
+    filtered_submissions = []
+
+    if "Keyword" in filter:
+        keyword = filter["Keyword"]
+    else:
+        keyword = None 
+
+    if "StartTimeUTC" in filter:
+        utc = datetime.strptime(filter["StartTimeUTC"], "%Y-%m-%dT%H:%M:%SZ")
+        unix = utc.timestamp()
+    else:
+        unix = None
+
+    for submission in submissions:
+        filtered_comments = [
+            comment for comment in submission["comments"]
+            if
+            (
+                (not keyword or any(word in comment["body"].lower() for word in [k.lower() for k in keyword])) and
+                (not unix or comment["created_utc"] >= unix)
+            )
+        ]
+
+        if filtered_comments:
+            submission["comments"] = filtered_comments
+            filtered_submissions.append(submission)
+
+    return filtered_submissions
 
 
 def create_submission_json(submissions: list, subreddit):
-    path = "../data_collected/reddit/" + subreddit
-    file = str(time.time()) + ".json"
-    Path(path).mkdir(parents=True, exist_ok=True)
+    try:
+        path = "../data_collected/reddit/" + subreddit
+        file = str(time.time()) + ".json"
+        Path(path).mkdir(parents=True, exist_ok=True)
 
-    with open(os.path.join(path, file), "w") as f:
-        json.dump(submissions, f)
-
-    if cli_arguments:
-        # TODO: Has to be modified for "STM-114:dynamic output directories" later on
-        with open("../data_collected/reddit/" + subreddit + "/" + file) as f:
-            data = json.load(f)
-            stuff = find_stock(sys.argv[1:])
-            for key, value in stuff.items():
-                filtered_json = []
-                for submission in data:
-                    relevant_comments = [
-                        # Will look for a complete ticker match within the comment body, or
-                        # Will look for a word match within the body.
-                        # For example, "Tesla Inc. Common Stock" and "I love stocks" will return a match,
-                        # whereas "Tesla Inc. Common Stock" and "I love Tes" (should) not.
-
-                        # TODO: Potentially look into removing common words such as "stock" from nasdaq.csv and only keep company name
-                        comment for comment in submission['comments'] if key.lower() in comment['body'].lower() or
-                                                                         any(re.search(r"\b" + re.escape(word.lower()) +
-                                                                                       r"\b", comment['body'].lower())
-                                                                             for word in value.split())
-                    ]
-                    # If we find any matches, replace the old list in the submission object with the new filtered list
-                    # We build a new JSON using the old one with only filtered comments as a result
-                    if relevant_comments:
-                        filtered_submission = submission.copy()
-                        filtered_submission['comments'] = relevant_comments
-                        filtered_json.append(filtered_submission)
-
-                #TODO: As is, we will most likely have duplicate comments since a new sub-directory is being made for every
-                # cli arg. Could just do one output for all args, but then it would be difficult to tell which cli arg
-                # comment had a match for. Discuss with team later.
-
-                filter_path = "../data_collected/reddit/" + subreddit + "/" + key
-                Path(filter_path).mkdir(parents=True, exist_ok=True)
-                file = str(time.time()) + ".json"
-                with open(os.path.join(filter_path, file), "w") as filtered:
-                    json.dump(filtered_json, filtered)
+        with open(os.path.join(path, file), "w") as f:
+            json.dump(submissions, f)
+            logging.info("Successfully created JSON for subreddit: " + subreddit)
+    except:
+        logging.error("Error encountered when creating JSON for subreddit: " + subreddit)
 
 
-top_25_scanner()
+subreddit_scanner()
