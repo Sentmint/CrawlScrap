@@ -2,7 +2,7 @@ import json
 
 def getConfig():
     try:
-        with open('reddit/reddit_resource/reddit_config.json') as config:
+        with open('reddit/reddit_resources/reddit_config.json') as config:
             data = json.load(config)
             return data
     except:
