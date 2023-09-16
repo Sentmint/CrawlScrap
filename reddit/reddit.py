@@ -78,7 +78,7 @@ def top_25_scanner():
                 "comment_count": submission.num_comments,
                 "comments": comments
             })
-        publish_stock(top25Submissions)
+        publish_stock(top25Submissions, '','scraped_data')
         create_submission_json(top25Submissions, subreddit)
 
 
