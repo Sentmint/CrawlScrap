@@ -4,7 +4,7 @@ NOTE:
 - View TODO comments is where changes are made for TESTING purposes only
 """
 
-import time, requests, logging, csv, pickle, os, subprocess
+import time, requests, logging, csv, pickle, os, subprocess, base64
 from search_query import search_query_list
 from dotenv import load_dotenv #For envrionment variables
 from selenium.webdriver import Chrome #Firefox Browser: "Firefox" | Edge Browser: "from msedge.selenium_tools import Edge, EdgeOptions"
@@ -166,8 +166,16 @@ def run_sync_script_rabbitmq(tuple_content):
         2. Send + others
         - Subprocess = Access and reference functions from other repositories file contents from ANOTHER Github Repo within SAME Github Organization (Invoked as subprocess)
     '''
+    # Convert tuple_content payload into BYTE Format to hopefully be accepted by rabbitmq
+    print(tuple_content)
+    byte_payload_conversion = pickle.dumps(tuple_content)
+    # Encode the data to Base64
+    encoded_data = base64.b64encode(byte_payload_conversion).decode('utf-8')
+
+    print(encoded_data)
+
    # subprocess.run(['python', '../../Sync-Script/scrapers/receive.py'])
-    subprocess.run(['python', '../../Sync-Script/scrapers/send.py', tuple_content]) #['python', '../../Sync-Script/scrapers/send.py', tuple_content])    
+    subprocess.run(['python', '../../Sync-Script/scrapers/send.py', encoded_data]) #['python', '../../Sync-Script/scrapers/send.py', tuple_content])    
 
 
 def store_tweet_data_payload(searchQuery, dataPayload):
