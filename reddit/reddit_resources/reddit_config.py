@@ -1,8 +1,10 @@
 import json
+import os
 
 def getConfig():
     try:
-        with open('reddit/reddit_resources/reddit_config.json') as config:
+        config_path = os.path.join(os.path.dirname(__file__), 'reddit_config.json')
+        with open(config_path) as config:
             data = json.load(config)
             return data
     except:
