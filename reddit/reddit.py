@@ -12,6 +12,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 crawl_scrape_dir = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(crawl_scrape_dir)
 from stock.stock_search import find_stock
+from producer import publish_stock
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -77,6 +78,7 @@ def top_25_scanner():
                 "comment_count": submission.num_comments,
                 "comments": comments
             })
+        publish_stock(top25Submissions, '','scraped_data')
         create_submission_json(top25Submissions, subreddit)
 
 
