@@ -1,8 +1,17 @@
 services:
-  data-collectors:
-    image: registry.digitalocean.com/sentmint/data-collectors
-    build: .
-    volumes:
-      - data:./data_collected/
+  # data-collectors:
+  #   image: registry.digitalocean.com/sentmint/data-collectors
+  #   build: .
+  #   volumes:
+  #     - data:./data_collected/
+  #   env_file:
+  #     - .env
+  reddit-scraper:
+    image: reddit-scraper
     env_file:
       - .env
+  # twitter-scraper:
+  #   image: twitter-scraper
+  #   command: 
+  #   env_file:
+  #     - .env
