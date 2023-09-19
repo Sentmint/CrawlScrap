@@ -1,0 +1,21 @@
+{
+  "Subreddits": 
+  [
+    {
+      "Name": "Apple",
+      "Filter": 
+      {
+        "Keyword": ["iPad"],
+        "StartTimeUTC": "2023-09-16T14:00:00Z"
+      }
+    },
+    {
+      "Name": "TeamFightTactics",
+      "Filter": 
+      {
+        "Keyword": ["Chibi", "Diamond"],
+        "StartTimeUTC": "2023-09-16T14:00:00Z"
+      }
+    }
+  ]
+}

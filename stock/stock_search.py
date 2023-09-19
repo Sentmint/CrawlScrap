@@ -3,6 +3,7 @@ import os
 import sys
 import pandas as pd
 
+# DECOMMISSIONED. Might be used later, not worth the hassle of keeping up to date nasdaq information as of now.
 
 def find_stock(args: list[str]):
     found_stock = {}
