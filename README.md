@@ -1,12 +1,36 @@
 # Data Collection
 
     The collection of data scraped from various online website sources:
+
+<details>
+
+<summary><font size="5">  Docker </font></summary>
+
+
+## Docker-compose is setup to run the scrapers. 
+
+Each scraper will have it's personalized Dockerfile which specifies all commands and requirements
+
+| Key Command | Function |
+| -- | -- | 
+| docker images| View all existing docker images created  |
+| docker ps | View all running docker containers/processes  | 
+| docker build -t \<name of image to create> . | Build new docker image |
+| docker run \<created image>  | Run specific docker image Dockerfile in directory | 
+| docker-compose up | Using docker-compose file, run multiple docker images at a time (And view live logs) | 
+
+</details>
+
+<br>
+
 | Source                            | Summary |
 |---------                          |----------|
 | Twitter         | (w/o API usage) Twitter Cards Scraper using Python and Selenium. Users input a custom search query and all tweet cards are extracted, collected, and stored until the end of the page; console logs are present throughout this process.                                       |
 | Reddit          | (w/ API usage) User can provide a list of subreddits to scan. For each subreddit, the top 25 submissions (front page) of the subreddit will be scanned and the body of each comment within those 25 submissions will be stored with additional data such as upvote ratio or submission time.     |
 | Yahoo       | (w/ API usage)  [TBD] Using the third party service "Alpha Vantage."    |
 |                                   |          |
+
+
 
 <details>
 
