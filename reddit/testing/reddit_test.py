@@ -1,10 +1,11 @@
+import json
+import logging
+import os
+import time
 from pathlib import Path
 from reddit_service import praw_service as praw
 from reddit_resource import subreddits as subs
-import logging
-import json
-import time
-import os
+from producer import publish_stock
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -49,6 +50,7 @@ def test_1_scan():
             "comment_count": submission.num_comments,
             "comments": comments
         })
+        publish_stock(top25Submissions, '','scraped_data')
         create_submission_json(top25Submissions, subreddit)
         break
 

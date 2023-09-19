@@ -150,3 +150,105 @@
 2023-09-16 16:11:38,689 [MainThread] [INFO ]  Successfully collected 16 comments
 2023-09-16 16:11:38,689 [MainThread] [INFO ]  Attempting to create JSON for scanned subreddit: apple
 2023-09-16 16:11:38,825 [MainThread] [INFO ]  Successfully created JSON for subreddit: apple
+2023-09-17 14:01:46,898 [MainThread] [INFO ]  Scanning subreddit: Apple
+2023-09-17 14:01:46,901 [MainThread] [INFO ]  Successfully collected the front page submissions of Apple
+2023-09-17 14:01:47,948 [MainThread] [INFO ]  Scanning submission: Apple’s Just-Good-Enough Lineup Will Hold It Over Until Next Year
+2023-09-17 14:01:50,120 [MainThread] [INFO ]  Successfully collected 287 comments
+2023-09-17 14:01:50,121 [MainThread] [INFO ]  Scanning submission: iPhone 15 Pro 10% lighter but 15% lower rotational inertia because of edge mass
+2023-09-17 14:01:51,493 [MainThread] [INFO ]  Successfully collected 222 comments
+2023-09-17 14:01:51,494 [MainThread] [INFO ]  Scanning submission: I made the real-world exploration game Zonder, back to answer more questions and talk about how we’re gamifying travel!
+2023-09-17 14:01:51,650 [MainThread] [INFO ]  Successfully collected 7 comments
+2023-09-17 14:01:51,650 [MainThread] [INFO ]  Scanning submission: iPhone 15's USB-C Port: 4.5W Charging for Accessories, USB 3.2 Gen 2 for Pro Models, and More
+2023-09-17 14:01:52,530 [MainThread] [INFO ]  Successfully collected 152 comments
+2023-09-17 14:01:52,530 [MainThread] [INFO ]  Scanning submission: iPhone 15 fulfills a vision for photography shared with Steve Jobs over a decade ago
+2023-09-17 14:01:54,273 [MainThread] [INFO ]  Successfully collected 245 comments
+2023-09-17 14:01:54,276 [MainThread] [INFO ]  Scanning submission: [9To5Mac] First iPhone 15 pre-orders now shipping ahead of Friday launch
+2023-09-17 14:01:54,474 [MainThread] [INFO ]  Successfully collected 14 comments
+2023-09-17 14:01:54,475 [MainThread] [INFO ]  Scanning submission: Recently launched my first iOS app SubManager - a subscription tracking app
+2023-09-17 14:01:54,656 [MainThread] [INFO ]  Successfully collected 15 comments
+2023-09-17 14:01:54,657 [MainThread] [INFO ]  Scanning submission: New malware strain stealing business data from Intel Macs
+2023-09-17 14:01:54,847 [MainThread] [INFO ]  Successfully collected 12 comments
+2023-09-17 14:01:54,847 [MainThread] [INFO ]  Scanning submission: iPhone 15 Pro with offers up to 24% faster 5G download speeds
+2023-09-17 14:01:55,303 [MainThread] [INFO ]  Successfully collected 91 comments
+2023-09-17 14:01:55,304 [MainThread] [INFO ]  Scanning submission: Apple's Latest Transparency Report Includes Geofence Requests From U.S. Government
+2023-09-17 14:01:55,469 [MainThread] [INFO ]  Successfully collected 8 comments
+2023-09-17 14:01:55,469 [MainThread] [INFO ]  Scanning submission: Apple FineWoven iPhone 15/iPhone 15 Pro Case Review - $60 For This?
+2023-09-17 14:01:59,128 [MainThread] [INFO ]  Successfully collected 451 comments
+2023-09-17 14:01:59,130 [MainThread] [INFO ]  Scanning submission: Any plans for an official USB-c SuperDrive?
+2023-09-17 14:01:59,744 [MainThread] [INFO ]  Successfully collected 88 comments
+2023-09-17 14:01:59,744 [MainThread] [INFO ]  Scanning submission: Contrary to rumors, the iPhone 15 has a standard, by-the-book USB-C port
+2023-09-17 14:02:02,139 [MainThread] [INFO ]  Successfully collected 401 comments
+2023-09-17 14:02:02,145 [MainThread] [INFO ]  Scanning submission: Some iPhone 15 and iPhone 15 Pro Pre-Orders Now 'Preparing to Ship' Ahead of September 22 Launch
+2023-09-17 14:02:03,062 [MainThread] [INFO ]  Successfully collected 143 comments
+2023-09-17 14:02:03,062 [MainThread] [INFO ]  Scanning submission: I miss when keynotes were cool and fun
+2023-09-17 14:02:04,009 [MainThread] [INFO ]  Successfully collected 205 comments
+2023-09-17 14:02:04,010 [MainThread] [INFO ]  Scanning submission: Apple Store Down Ahead of iPhone 15 Pre-Orders
+2023-09-17 14:06:48,974 [MainThread] [INFO ]  Successfully collected 1850 comments
+2023-09-17 14:06:48,979 [MainThread] [INFO ]  Scanning submission: iPhone 15 Pro and Pro Max Shipping Estimates Extending Into October
+2023-09-17 14:08:40,635 [MainThread] [INFO ]  Successfully collected 613 comments
+2023-09-17 14:08:40,637 [MainThread] [INFO ]  Scanning submission: Thoughts and Observations on This Week’s ‘Wonderlust’ Apple Event [John Gruber]
+2023-09-17 14:08:41,945 [MainThread] [INFO ]  Successfully collected 37 comments
+2023-09-17 14:08:41,946 [MainThread] [INFO ]  Scanning submission: iPhone 15 and iPhone 15 Pro Models Now Available for Pre-Order
+2023-09-17 14:09:59,796 [MainThread] [ERROR]  API returned a non-ok response. Likely due to API Limit bug. Skipping submission: iPhone 15 and iPhone 15 Pro Models Now Available for Pre-Order
+2023-09-17 14:09:59,797 [MainThread] [INFO ]  Scanning submission: Daily Advice Thread - September 16, 2023
+2023-09-17 14:10:02,349 [MainThread] [INFO ]  Successfully collected 99 comments
+2023-09-17 14:10:02,349 [MainThread] [INFO ]  Scanning submission: Apple iPhone 15 Series Battery Capacity and Wattage Support Revealed by Chinese Regulatory Database
+2023-09-17 14:10:04,115 [MainThread] [INFO ]  Successfully collected 164 comments
+2023-09-17 14:10:04,116 [MainThread] [INFO ]  Scanning submission: iPhone 15 Pro Max Deliveries Delayed in Some Countries
+2023-09-17 14:10:05,040 [MainThread] [INFO ]  Successfully collected 71 comments
+2023-09-17 14:10:05,040 [MainThread] [INFO ]  Scanning submission: 👶 Tired of Scattering Precious Moments of your child? Introducing Kidday - The Ultimate Baby Book App!
+2023-09-17 14:10:05,149 [MainThread] [INFO ]  Successfully collected 0 comments
+2023-09-17 14:10:05,149 [MainThread] [INFO ]  Attempting to create JSON for scanned subreddit: Apple
+2023-09-17 14:10:05,170 [MainThread] [INFO ]  Successfully created JSON for subreddit: Apple
+2023-09-17 14:10:05,170 [MainThread] [INFO ]  Scanning subreddit: TeamFightTactics
+2023-09-17 14:10:05,171 [MainThread] [INFO ]  Successfully collected the front page submissions of TeamFightTactics
+2023-09-17 14:10:05,549 [MainThread] [INFO ]  Scanning submission: Hm, what should I play here
+2023-09-17 14:10:06,216 [MainThread] [INFO ]  Successfully collected 16 comments
+2023-09-17 14:10:06,217 [MainThread] [INFO ]  Scanning submission: one 3* 5 cost vs three 3* 5 costs, who wins?
+2023-09-17 14:10:06,996 [MainThread] [INFO ]  Successfully collected 36 comments
+2023-09-17 14:10:06,997 [MainThread] [INFO ]  Scanning submission: Samira reroll + 2 darkin is broken af, one cast and 3 star nilah is dead
+2023-09-17 14:10:08,163 [MainThread] [INFO ]  Successfully collected 10 comments
+2023-09-17 14:10:08,164 [MainThread] [INFO ]  Scanning submission: to the guy with 6 thiefs gloves, i raise you 10 (set 9)
+2023-09-17 14:10:08,773 [MainThread] [INFO ]  Successfully collected 4 comments
+2023-09-17 14:10:08,773 [MainThread] [INFO ]  Scanning submission: Bilgewater comp players be like
+2023-09-17 14:10:10,046 [MainThread] [INFO ]  Successfully collected 29 comments
+2023-09-17 14:10:10,047 [MainThread] [INFO ]  Scanning submission: New set is hard
+2023-09-17 14:10:11,424 [MainThread] [INFO ]  Successfully collected 50 comments
+2023-09-17 14:10:11,425 [MainThread] [INFO ]  Scanning submission: Actually went 6th from this position. I'm depressed.
+2023-09-17 14:10:12,092 [MainThread] [INFO ]  Successfully collected 17 comments
+2023-09-17 14:10:12,093 [MainThread] [INFO ]  Scanning submission: I see your 12k Cho - now get ready for the CHONK´gath
+2023-09-17 14:10:12,698 [MainThread] [INFO ]  Successfully collected 2 comments
+2023-09-17 14:10:12,698 [MainThread] [INFO ]  Scanning submission: 12k chgath is real and it will eat u
+2023-09-17 14:10:13,844 [MainThread] [INFO ]  Successfully collected 2 comments
+2023-09-17 14:10:13,845 [MainThread] [INFO ]  Scanning submission: Tried the Samira Naafiri comp. Good enough for them.
+2023-09-17 14:10:14,967 [MainThread] [INFO ]  Successfully collected 3 comments
+2023-09-17 14:10:14,968 [MainThread] [INFO ]  Scanning submission: I managed to get a normal item with what the forge active
+2023-09-17 14:10:16,127 [MainThread] [INFO ]  Successfully collected 4 comments
+2023-09-17 14:10:16,128 [MainThread] [INFO ]  Scanning submission: Very meh season during Bilgemania, today however...
+2023-09-17 14:10:16,741 [MainThread] [INFO ]  Successfully collected 0 comments
+2023-09-17 14:10:16,742 [MainThread] [INFO ]  Scanning submission: one 3* 5 cost vs three 3* 5 costs, who wins?
+2023-09-17 14:10:17,861 [MainThread] [INFO ]  Successfully collected 3 comments
+2023-09-17 14:10:17,862 [MainThread] [INFO ]  Scanning submission: I just started playing and I got a good game. This game is fun
+2023-09-17 14:10:18,972 [MainThread] [INFO ]  Successfully collected 0 comments
+2023-09-17 14:10:18,973 [MainThread] [INFO ]  Scanning submission: Yikes. Not even 3* 8 Chal Nilah can beat Wood Cho. Luckily I didn't get Giant Slayer-ed ._.
+2023-09-17 14:10:20,077 [MainThread] [INFO ]  Successfully collected 0 comments
+2023-09-17 14:10:20,078 [MainThread] [INFO ]  Scanning submission: Why silco is wearing green and not purple/blood red?
+2023-09-17 14:10:20,692 [MainThread] [INFO ]  Successfully collected 0 comments
+2023-09-17 14:10:20,692 [MainThread] [INFO ]  Scanning submission: Award from LayerZero: Mastering Excellence at $3100
+2023-09-17 14:10:21,808 [MainThread] [INFO ]  Successfully collected 0 comments
+2023-09-17 14:10:21,809 [MainThread] [INFO ]  Scanning submission: Last Win Before The Season Ended
+2023-09-17 14:10:22,938 [MainThread] [INFO ]  Successfully collected 1 comments
+2023-09-17 14:10:22,939 [MainThread] [INFO ]  Scanning submission: Not 1 but 2 3star 5 cost
+2023-09-17 14:10:24,085 [MainThread] [INFO ]  Successfully collected 9 comments
+2023-09-17 14:10:24,085 [MainThread] [INFO ]  Scanning submission: If only i had items
+2023-09-17 14:10:24,687 [MainThread] [INFO ]  Successfully collected 0 comments
+2023-09-17 14:10:24,688 [MainThread] [INFO ]  Scanning submission: 2-1 3 star Cho Gath is kinda good. First no loss victory.
+2023-09-17 14:10:25,837 [MainThread] [INFO ]  Successfully collected 1 comments
+2023-09-17 14:10:25,837 [MainThread] [INFO ]  Scanning submission: Getting gradually luckier and wasting my luck for 2023
+2023-09-17 14:10:26,951 [MainThread] [INFO ]  Successfully collected 0 comments
+2023-09-17 14:10:26,951 [MainThread] [INFO ]  Scanning submission: 6 Thieves Gloves with the Lucky Gloves augment
+2023-09-17 14:10:28,144 [MainThread] [INFO ]  Successfully collected 16 comments
+2023-09-17 14:10:28,145 [MainThread] [INFO ]  Scanning submission: I can't quite wrap my head around 13.18
+2023-09-17 14:10:28,752 [MainThread] [INFO ]  Successfully collected 1 comments
+2023-09-17 14:10:28,753 [MainThread] [INFO ]  Attempting to create JSON for scanned subreddit: TeamFightTactics
+2023-09-17 14:10:28,759 [MainThread] [INFO ]  Successfully created JSON for subreddit: TeamFightTactics

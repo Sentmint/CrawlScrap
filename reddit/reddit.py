@@ -1,15 +1,14 @@
 import json
 import logging
 import os
-import sys
 import time
-import re
 import praw.models
 from datetime import datetime
 from pathlib import Path
 from reddit_resources import reddit_config as config
 from reddit_service import praw_service as p
 from reddit_service import logger as log
+from producer import publish_stock
 
 def subreddit_scanner():
     reddit = p.praw_connection()
@@ -21,7 +20,7 @@ def subreddit_scanner():
             continue
 
         logging.info("Scanning subreddit: " + subreddit)
-        front_page_comments = []
+        collected_comments = []
         try:
             front_page = reddit.subreddit(subreddit).hot(limit=25)
             logging.info("Successfully collected the front page submissions of " + subreddit)
@@ -63,7 +62,7 @@ def subreddit_scanner():
                     "score": comment.score,
                     "ups": comment.ups
                 })
-            front_page_comments.append({
+            collected_comments.append({
                 "id": submission.id,
                 "title": submission.title,
                 "flair": submission.link_flair_text,
@@ -83,10 +82,12 @@ def subreddit_scanner():
         
         logging.info("Attempting to create JSON for scanned subreddit: " + subreddit)
         if "Filter" in config_data: 
-            filtered_comments = filter_submission_json(front_page_comments, config_data["Filter"])
+            filtered_comments = filter_submission_json(collected_comments, config_data["Filter"])
+            publish_stock(filtered_comments, '','scraped_data')
             create_submission_json(filtered_comments, subreddit)
         else:
-            create_submission_json(front_page_comments, subreddit)
+            publish_stock(collected_comments, '','scraped_data')
+            create_submission_json(collected_comments, subreddit)
 
 
 def filter_submission_json(submissions: list, filter: dict):
