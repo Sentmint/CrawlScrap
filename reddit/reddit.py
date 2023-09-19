@@ -22,20 +22,22 @@ def subreddit_scanner():
         logging.info("Scanning subreddit: " + subreddit)
         collected_comments = []
         try:
-            front_page = reddit.subreddit(subreddit).hot(limit=25)
+            thread_limit = int(os.environ.get('REDDIT_THREAD_LIMIT', "25"))
+            threads = reddit.subreddit(subreddit).hot(limit = thread_limit)
             logging.info("Successfully collected the front page submissions of " + subreddit)
         except:
             logging.error("Error encountered when collecting the front page submissions on the subreddit: " + subreddit)
             continue
         
-        for submission in front_page:
+        for submission in threads:
             # For now we're skipping mod-related posts since they're not relevant to our project
             if submission.stickied:
                 continue
             logging.info("Scanning submission: " + submission.title)
             comments = []
 
-            # Potentially change the limiter here until reddit fixes their api limitation logic
+            # TODO: There is a bug in the Reddit API limitation logic. It's been reported but no fix yet.
+            # As a result, we may sometimes miss comments. Changing our threshold limit here may not fix the issue entirely.
             try:
                  # Fetch all comments and their children
                 submission.comments.replace_more(limit=None, threshold=0) 
@@ -123,11 +125,12 @@ def filter_submission_json(submissions: list, filter: dict):
 
 def create_submission_json(submissions: list, subreddit):
     try:
-        path = "../data_collected/reddit/" + subreddit
+        init_path = os.environ.get('REDDIT_OUTPUT_PATH', "../data_collected/reddit/") 
+        final_path = os.path.join(init_path, subreddit)
         file = str(time.time()) + ".json"
-        Path(path).mkdir(parents=True, exist_ok=True)
+        Path(final_path).mkdir(parents=True, exist_ok=True)
 
-        with open(os.path.join(path, file), "w") as f:
+        with open(os.path.join(final_path, file), "w") as f:
             json.dump(submissions, f)
             logging.info("Successfully created JSON for subreddit: " + subreddit)
     except:
