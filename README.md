@@ -105,7 +105,13 @@ Folders corresponding to the scanned subreddit will be created [here](data_colle
 
 Requires a Reddit account with a script application defined. Quick guide available [here](https://towardsdatascience.com/scraping-reddit-data-1c0af3040768)
 
-The credentials for the PRAW connection are fetched from an env file that has to be created and populated manually when running this application for the first time. There is a `.env.template` available [here](.env.template); the four credentials needed for the Reddit application are `CLIENT_ID`, `CLIENT_SECRET`, `USER_AGENT`, and `REDDIT_RABBITMQ_HOST`.
+The credentials for the PRAW connection are fetched from an env file that has to be created and populated manually when running this application for the first time. There is a `.env.template` available [here](.env.template); the four credentials needed for the Reddit application are:
+- `CLIENT_ID` 
+- `CLIENT_SECRET`
+- `USER_AGENT`
+- `REDDIT_RABBITMQ_HOST`
+- `REDDIT_THREAD_LIMIT`
+- `REDDIT_OUTPUT_PATH`
 
 
 
