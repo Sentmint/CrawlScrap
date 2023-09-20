@@ -15,7 +15,7 @@ TODO NOTE: OPTIONAL Addons below
  - Edge/Outlier case may exist where user posts content that the webpage css does not exist so crash application?
 """
 
-import time, requests, logging, csv, pickle, os, sys
+import time, requests, random, csv, pickle, os, sys
 from search_query import search_query_list
 from dotenv import load_dotenv #For envrionment variables
 from selenium.webdriver import Chrome #Firefox Browser: "Firefox" | Edge Browser: "from msedge.selenium_tools import Edge, EdgeOptions"
@@ -28,34 +28,19 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 crawl_scrape_dir = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(crawl_scrape_dir)
 from stock.stock_search import find_stock
-
+from producer import publish_stock
+from log_format import setup_logger
 
 ####################### FUNCTIONS ##########################
-def setup_logger():
-    """ Function sets up logger and logging capabilities: organize messages
-        - Logger log levels: Debug, Info, Warn, Error, Critial, Fatal
-        Returns logger object with custom template to print logs/msgs to devs in console
-    """
-    # Create logger
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG) # SET log level
-
-    # Create log handler and formatter
-    handler = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    handler.setFormatter(formatter) # Add formatter to handler
-    logger.addHandler(handler) # Add handler to logger
-    return logger
-
-
 def valid_connection_status():
     """ Function checks connection status before interacting with webpage
         Returns True if valid connection to webpage; False if not
     """
     try:
         currentURL = driver.current_url
+        logger.debug(currentURL)
         response = requests.head(currentURL) # Send HEAD request to the webpage
+        logger.debug(response)
         return (True) if (response.status_code == 200) else (False) # Ternary operator to check connection status
     except Exception as eMsg:
         logger.debug("<< Connection to Webpage FAILED/LOST >> \n \
@@ -119,6 +104,7 @@ def scroll_to_bottom():
             # ###### END #########
 
         else: # Invalid connection status
+            logger.debug("INVALID connection status")
             break
 
 
@@ -200,7 +186,7 @@ def store_tweet_data_payload(searchQuery, dataPayload):
         os.makedirs('../data_collected/twitter/' + searchQuery + "/")
 
     directoryPath = '../data_collected/twitter/' + searchQuery + "/"
-    createdfileName = str(time.time())
+    createdfileName = str(time.time()) + "_" + searchQuery 
 
     #-- TO CSV Format
     csvFile = os.path.join(directoryPath, createdfileName + ".csv")
@@ -221,6 +207,9 @@ def store_tweet_data_payload(searchQuery, dataPayload):
 
     logger.info("<< STORED Tweets Payload >>")
 
+    #-- Send collected Twitter data payload to RabbitMQ Queue
+    publish_stock(binaryFile,'','scraped_data', logger)
+
 
 # ----------------------------------------------------- (DIVIDER) -----------------------------------------------------
 
@@ -231,12 +220,17 @@ logger = setup_logger() # Logging Messages
 load_dotenv() # Load environment variables from .env file
 
 #-- Create Instance of Webdriver
-user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36' #'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
+user_agents_list = [ # NOTE: NEED to randomize user agent every time run to NOT get flagged by Twitter that we are bot scraping and they blacklist (ie: 403 forbidden us access)
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36', #'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
+    'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.83 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36'
+]
 options = ChromeOptions()
 # (In order to run CI agent account on Ubuntu server (within Jenkins Build Environment)
 options.add_argument("--no-sandbox") # Bypass OS security model (Has to be first option)
 options.add_argument("--disable-dev-shm-usage") # overcome limited resource problems
-options.add_argument(f'user-agent={user_agent}') # Needed for headless mode
+options.add_argument(f'user-agent={random.choice(user_agents_list)}') # Needed for headless mode
 options.add_argument('--headless') # Runs Chrome Driver without actual browser [NOTE: Comment out to debug WITH browser]
 
 # (IF needed JIC for headless mode not working)

@@ -33,7 +33,12 @@ User Tweet Cards Content Scraper on Twitter
 
 ### How to Run the Application
 
+0. Requires a Twitter account (Will be using a dummy account within .env file)
 1. Ensure .ENV variable file fields are valid
+    - `TWITTER_USERNAME`
+    - `TWITTER_USER_CONFIRMATION`
+    - `TWITTER_PSWD`
+    - `TWITTER_RABBITMQ_HOST` (Created for you)
 2. Ensure the custom search query resources file are satisfied
 3. Enter the directory containing the selenium_twitter_scraper.py file: ``..\CrawlScrape\twitter`` 
 4. Application will start running once the command ``python selenium_twitter_scraper.py`` is entered
