@@ -39,6 +39,7 @@ jobs:
       uses: docker/build-push-action@v5.0.0
       with:
         push: true
+        platforms: ${{ matrix.platform }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         context: .
