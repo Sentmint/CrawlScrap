@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - STM-180
 
 env:
   REGISTRY_IMAGE: sentmint/r-scrape
