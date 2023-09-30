@@ -12,8 +12,11 @@ jobs:
     strategy:
       matrix:
         platform:
-          - linux/amd64
-          - linux/arm64/v8
+          - name: linux/amd64
+            tag: latest-amd64
+
+          - name: linux/arm64/v8
+            tag: latest-arm64v8
 
     steps:
 
