@@ -14,7 +14,6 @@ def subreddit_scanner():
     reddit = p.praw_connection()
     reddit_config = config.getConfig()
     log.formatter()
-    logging.info("config: ", reddit_config)
     for config_data in reddit_config["Subreddits"]:
         subreddit = config_data["Name"]
         if not subreddit:
