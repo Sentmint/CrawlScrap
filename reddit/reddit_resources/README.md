@@ -16,6 +16,12 @@
 
 <b>It is not necessary to include all filter fields, or any at all. Simply do not include the Filter field if you do not want to filter on anything, as seen in the example below.
 
+### Note
+
+When setting config as an environment variable, please minify it (remove spaces)
+
+### Visual Example
+
 ```
 {
     "Subreddits": 
@@ -48,4 +54,10 @@
     ]
 }
 
+```
+
+### .env example
+
+```
+{"Subreddits":[{"Name":"Apple","Filter":{"Keyword":["iPad"],"StartTimeUTC":"2023-09-16T14:00:00Z"}},{"Name":"TeamFightTactics","Filter":{"Keyword":["Chibi","Diamond"],"StartTimeUTC":"2023-09-16T14:00:00Z"}}]}
 ```
