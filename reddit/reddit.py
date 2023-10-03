@@ -9,10 +9,12 @@ from reddit_resources import reddit_config as config
 from reddit_service import praw_service as p
 from reddit_service import logger as log
 from reddit_service.producer import publish_stock
+from reddit_service import sentry
 
 def subreddit_scanner():
     reddit = p.praw_connection()
     reddit_config = config.getConfig()
+    sentry.init_sentry()
     log.formatter()
     for config_data in reddit_config["Subreddits"]:
         subreddit = config_data["Name"]
