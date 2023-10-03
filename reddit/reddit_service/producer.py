@@ -5,8 +5,15 @@ import logging
 
 def publish_stock(stocks_found, queue_exchange, queue_key, logging):
     # Sends the found stocks to the queue  
+    host = os.environ.get('REDDIT_RABBITMQ_HOST')
+    user = os.environ.get('REDDIT_RABBITMQ_USER')
+    password = os.environ.get('REDDIT_RABBITMQ_PASS')
+
     connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host=os.environ.get('REDDIT_RABBITMQ_HOST')))
+    pika.ConnectionParameters(
+        host=host,
+        credentials=pika.PlainCredentials(user, password)
+    ))
     channel = connection.channel()
 
     channel.queue_declare(queue=queue_key) # TODO: Make this a passive queue once queue creation is handled
