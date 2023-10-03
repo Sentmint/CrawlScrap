@@ -10,9 +10,9 @@ def publish_stock(stocks_found, queue_exchange, queue_key, logging):
     password = os.environ.get('REDDIT_RABBITMQ_PASS')
 
     connection = pika.BlockingConnection(
-    pika.ConnectionParameters(
-        host=host,
-        credentials=pika.PlainCredentials(user, password)
+        pika.ConnectionParameters(
+            host=host,
+            credentials=pika.PlainCredentials(user, password)
     ))
     channel = connection.channel()
 
