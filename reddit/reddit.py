@@ -8,7 +8,7 @@ from pathlib import Path
 from reddit_resources import reddit_config as config
 from reddit_service import praw_service as p
 from reddit_service import logger as log
-from producer import publish_stock
+from reddit_service.producer import publish_stock
 
 def subreddit_scanner():
     reddit = p.praw_connection()
@@ -85,10 +85,10 @@ def subreddit_scanner():
         logging.info("Attempting to create JSON for scanned subreddit: " + subreddit)
         if "Filter" in config_data: 
             filtered_comments = filter_submission_json(collected_comments, config_data["Filter"])
-            publish_stock(filtered_comments, '','scraped_data')
+            publish_stock(filtered_comments, '','reddit-in', logging)
             create_submission_json(filtered_comments, subreddit)
         else:
-            publish_stock(collected_comments, '','scraped_data')
+            publish_stock(collected_comments, '','reddit-in', logging)
             create_submission_json(collected_comments, subreddit)
 
 
