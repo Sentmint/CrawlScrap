@@ -3,7 +3,7 @@ import logging
 import os
 import time
 import praw.models
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from reddit_resources import reddit_config as config
 from reddit_service import praw_service as p
@@ -102,8 +102,9 @@ def filter_submission_json(submissions: list, filter: dict):
     else:
         keyword = None 
 
-    if "StartTimeUTC" in filter:
-        utc = datetime.strptime(filter["StartTimeUTC"], "%Y-%m-%dT%H:%M:%SZ")
+    if "NMinAgo" in filter:
+        go_back_n_minutes = int(filter["NMinAgo"])
+        utc = datetime.now() - timedelta(minutes=go_back_n_minutes)
         unix = utc.timestamp()
     else:
         unix = None
