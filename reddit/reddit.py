@@ -102,8 +102,9 @@ def filter_submission_json(submissions: list, filter: dict):
     else:
         keyword = None 
 
-    if "StartTimeUTC" in filter:
-        utc = datetime.strptime(filter["StartTimeUTC"], "%Y-%m-%dT%H:%M:%SZ")
+    if "NMinAgo" in filter:
+        go_back_n_minutes = int(filter["NMinAgo"])
+        utc = datetime.now() - datetime.timedelta(minutes=go_back_n_minutes)
         unix = utc.timestamp()
     else:
         unix = None
