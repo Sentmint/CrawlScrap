@@ -9,5 +9,13 @@ def init_sentry():
         sentry_sdk.init(
             dsn=dsn,
             traces_sample_rate = traces,
-            profiles_sample_rate = profiles
+            profiles_sample_rate = profiles,
+            before_send = before_send
         )
+
+def before_send(event, hint):
+    if 'log_record' in hint:
+        log = hint['log_record'].message
+        if 'API returned a non-ok response.' in log or 'Error encountered when collecting the front page submissions' in log:
+            return None
+    return event
